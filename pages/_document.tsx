@@ -5,6 +5,8 @@ export default function Document() {
     return (
         <Html lang="en">
             <title>Ihmn Admin</title>
+            <link rel="icon" href="ihmnIcon.ico" />
+
             <Head />
             <body>
                 <Main />

@@ -118,7 +118,7 @@ function UserCourses({}: Props) {
                         onChange={handleSearchChange}
                     />
                     <button
-                        className="text-blue-600 hover:bg-blue-50 rounded-sm p-2 duration-300"
+                        className="text-green-600 hover:bg-green-50 rounded-sm p-2 duration-300"
                         onClick={handleOpen}
                     >
                         Ajouter des cours

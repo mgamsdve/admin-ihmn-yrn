@@ -139,7 +139,7 @@ export default function MyTreeView() {
                     placeholder="Rechercher"
                     className=" w-fit p-2 bg-gray-50 rounded-md"
                 />
-                <button className="text-blue-600 hover:bg-blue-50 rounded-md px-2 duration-300">
+                <button className="text-green-600 hover:bg-green-50 rounded-md px-2 duration-300">
                     Ajouter des cours
                 </button>
                 <button className="text-red-600 hover:bg-red-50 rounded-md px-2 duration-300">
@@ -158,28 +158,30 @@ export default function MyTreeView() {
                             key={period}
                             $cours={true}
                         >
-                            {(anneeData[period] || []).map((annee) => (
+                            {(anneeData[period] || []).map((annees) => (
                                 <StyledTreeItem
-                                    nodeId={`${period}-${annee}`}
-                                    label={annee}
+                                    nodeId={`${period}-${annees}`}
+                                    label={annees}
                                     $annee={true}
-                                    key={annee}
+                                    key={annees}
                                 >
-                                    {(coursData[period]?.[annee] || []).map(
+                                    {(coursData[period]?.[annees] || []).map(
                                         (cour) => (
                                             <TreeItem
-                                                nodeId={`${period}-${annee}-${cour.courdocId}`}
+                                                nodeId={`${period}-${annees}-${cour.courdocId}`}
                                                 label={cour.nomDuCour}
                                                 key={cour.courdocId}
                                             >
-                                                {(eleveData[cour] || []).map(
+                                                {(
+                                                    eleveData[cour.courdocId] ||
+                                                    []
+                                                ).map(
                                                     ({
                                                         eleveId,
                                                         prenom,
                                                         nom,
                                                     }) => (
-                                                        <StyledTreeItem
-                                                            $eleve={true}
+                                                        <TreeItem
                                                             nodeId={eleveId}
                                                             label={`${prenom} ${nom} ➜`}
                                                             key={prenom}

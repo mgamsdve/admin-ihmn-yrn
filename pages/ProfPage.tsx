@@ -43,7 +43,7 @@ export default function StudentDataGrid() {
             <div className="sm:flex space-x-5 ml-5">
                 <button
                     onClick={handleOpen}
-                    className="text-blue-600 text-lg  p-2 rounded-md w-fit mt-2 hover:bg-blue-50 duration-200"
+                    className="text-green-600 text-lg  p-2 rounded-md w-fit mt-2 hover:bg-green-50 duration-200"
                 >
                     + Ajouter
                 </button>

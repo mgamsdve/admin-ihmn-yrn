@@ -61,7 +61,7 @@ function Navigationbar() {
     }
     return (
         <div
-            className={` h-screen p-5 pt-8 border-b-8  border-blue-900 ${
+            className={` shadow-lg h-screen p-5 pt-8 border-b-8  border-blue-900 ${
                 open ? 'w-60' : 'w-20'
             } duration-300 relative rounded-e-sm`}
         >
@@ -99,8 +99,8 @@ function Navigationbar() {
                             <Link href={menu.to} key={menu.title}>
                                 <div
                                     className={`${
-                                        open && 'hover:bg-blue-50'
-                                    } rounded-md text-blue-800 ${
+                                        open && 'hover:bg-slate-100'
+                                    } rounded-md text-gray-900 ${
                                         !open && 'hover:text-blue-300'
                                     } ${open && 'p-2'} duration-200`}
                                 >
@@ -119,15 +119,26 @@ function Navigationbar() {
                     })}
                 </ul>
             </div>
-            <button
-                className={`text-red-600 rounded-md absolute bottom-5 left-5 flex flex-row space-x-2 text-xl ${
-                    open && 'hover:bg-red-100'
-                } ${!open && 'hover:text-red-300'}  p-2 duration-300`}
-                onClick={signOut}
-            >
-                <BiLogOut className="mt-1" />
-                <span className={`${!open && 'scale-0'} ml-2`}>Logout</span>
-            </button>
+            <div className="space-y-3 flex flex-col ">
+                <a
+                    href="https://draft.ihmn.be"
+                    className={` text-gray-600 absolute bottom-14 left-5 mb-4 text-sm ${
+                        !open && 'scale-0'
+                    } ml-2
+                `}
+                >
+                    Autres
+                </a>
+                <button
+                    className={`text-red-600 rounded-md absolute bottom-5 left-5 flex flex-row space-x-2 text-xl ${
+                        open && 'hover:bg-red-50'
+                    } ${!open && 'hover:text-red-300'}  p-2 duration-300`}
+                    onClick={signOut}
+                >
+                    <BiLogOut className="mt-1" />
+                    <span className={`${!open && 'scale-0'} ml-2`}>Logout</span>
+                </button>
+            </div>
         </div>
     )
 }
