@@ -1,5 +1,7 @@
 import {
+    arrayRemove,
     arrayUnion,
+    deleteDoc,
     doc,
     setDoc,
     updateDoc,
@@ -106,5 +108,55 @@ const addCoursToTheUser = async (
     const userRef = doc(db, 'users', userUId)
     await updateDoc(courRef, { eleves: arrayUnion(userRef) })
 }
-export { updateUser, updateProfessor, deleteDocuments, addCoursToTheUser }
+
+const addPeriodOnly = async (periodName) => {
+    await setDoc(doc(db, 'periods', periodName), {})
+}
+
+const addCourses = async (periods, annee, nomDuCour, profducour?) => {
+    await setDoc(doc(db, 'periods', periods, 'annees', annee), {})
+    await setDoc(
+        doc(db, 'periods', periods, 'annees', annee, 'cours', nomDuCour),
+        {
+            nomDuCour: nomDuCour,
+            profDuCour: profducour ? profducour : '',
+        }
+    )
+}
+
+const deleteCoursesToTheUser = async (userId, periodId, anneId, coursId) => {
+    const courRealRef = doc(
+        db,
+        'periods',
+        periodId,
+        'annees',
+        anneId,
+        'cours',
+        coursId
+    )
+    const userRef = doc(db, 'users', userId)
+    await updateDoc(courRealRef, {
+        eleves: arrayRemove(userRef),
+    })
+    const docRef = doc(
+        db,
+        'users',
+        userId,
+        'periods',
+        periodId,
+        'cours',
+        coursId
+    )
+    await deleteDoc(docRef)
+}
+
+export {
+    updateUser,
+    updateProfessor,
+    deleteDocuments,
+    addCoursToTheUser,
+    addPeriodOnly,
+    addCourses,
+    deleteCoursesToTheUser,
+}
 export default addUser

@@ -12,17 +12,19 @@ import {
 import { StyledTreeItem, StyledTreeView } from '@/Components/StyledTreeView'
 import { ChevronRight, ExpandMore } from '@mui/icons-material'
 import { useRouter } from 'next/router'
+import { Dialog, DialogContent, DialogTitle } from '@mui/material'
+import CoursNewContent from '@/Components/CoursNewContent'
 
 export default function MyTreeView() {
     const [periodsData, setPeriodsData] = useState([])
     const [anneeData, setAnneeData] = useState({})
     const [coursData, setCoursData] = useState({})
     const [eleveData, setEleveData] = useState({})
-
+    const [open, setOpen] = useState(false)
     const router = useRouter()
     useEffect(() => {
         const periodsdocsquery = query(collection(db, 'periods'))
-        getDocs(periodsdocsquery).then((periodsdocs) => {
+        onSnapshot(periodsdocsquery, (periodsdocs) => {
             const periods = []
             periodsdocs.forEach((perioddoc) => {
                 const periodId = perioddoc.id
@@ -73,7 +75,7 @@ export default function MyTreeView() {
                                                             (prevEleveData) => {
                                                                 if (
                                                                     prevEleveData[
-                                                                        courId
+                                                                        `${periodId}-${courId}`
                                                                     ]?.some(
                                                                         (
                                                                             eleve
@@ -86,17 +88,18 @@ export default function MyTreeView() {
                                                                 }
                                                                 return {
                                                                     ...prevEleveData,
-                                                                    [courId]: [
-                                                                        ...(prevEleveData[
-                                                                            courId
-                                                                        ] ||
-                                                                            []),
-                                                                        {
-                                                                            eleveId,
-                                                                            prenom,
-                                                                            nom,
-                                                                        },
-                                                                    ],
+                                                                    [`${periodId}-${courId}`]:
+                                                                        [
+                                                                            ...(prevEleveData[
+                                                                                `${periodId}-${courId}`
+                                                                            ] ||
+                                                                                []),
+                                                                            {
+                                                                                eleveId,
+                                                                                prenom,
+                                                                                nom,
+                                                                            },
+                                                                        ],
                                                                 }
                                                             }
                                                         )
@@ -132,6 +135,13 @@ export default function MyTreeView() {
         router.push(`/users/${userid}/UserDetail`)
     }
 
+    const handleOpen = () => {
+        setOpen(true)
+    }
+    const handleClose = () => {
+        setOpen(false)
+    }
+
     return (
         <div className="p-7 bg-gray-50 w-full h-screen flex flex-col space-y-5">
             <div className="bg-white w-full h-20 shadow-md rounded-lg p-7 flex flex-row space-x-5">
@@ -139,8 +149,11 @@ export default function MyTreeView() {
                     placeholder="Rechercher"
                     className=" w-fit p-2 bg-gray-50 rounded-md"
                 />
-                <button className="text-green-600 hover:bg-green-50 rounded-md px-2 duration-300">
-                    Ajouter des cours
+                <button
+                    onClick={handleOpen}
+                    className="text-green-600 hover:bg-green-50 rounded-md px-2 duration-300"
+                >
+                    Ajouter un cour
                 </button>
                 <button className="text-red-600 hover:bg-red-50 rounded-md px-2 duration-300">
                     Supprimer des cours
@@ -173,8 +186,9 @@ export default function MyTreeView() {
                                                 key={cour.courdocId}
                                             >
                                                 {(
-                                                    eleveData[cour.courdocId] ||
-                                                    []
+                                                    eleveData[
+                                                        `${period}-${cour.courdocId}`
+                                                    ] || []
                                                 ).map(
                                                     ({
                                                         eleveId,
@@ -182,7 +196,7 @@ export default function MyTreeView() {
                                                         nom,
                                                     }) => (
                                                         <TreeItem
-                                                            nodeId={eleveId}
+                                                            nodeId={`${period} ${annees} ${cour.courdocId} ${eleveId} `}
                                                             label={`${prenom} ${nom} ➜`}
                                                             key={prenom}
                                                             onDoubleClick={() =>
@@ -202,6 +216,22 @@ export default function MyTreeView() {
                     ))}
                 </StyledTreeView>
             </div>
+            <Dialog
+                open={open}
+                onClose={handleClose}
+                maxWidth="xl"
+                PaperProps={{
+                    style: {
+                        width: '400px',
+                        height: '700px',
+                    },
+                }}
+            >
+                <DialogTitle>Ajouter un Cour</DialogTitle>
+                <DialogContent>
+                    <CoursNewContent />
+                </DialogContent>
+            </Dialog>
         </div>
     )
 }

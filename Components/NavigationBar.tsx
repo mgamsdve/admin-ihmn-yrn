@@ -11,7 +11,7 @@ import { BiLogOut } from 'react-icons/bi'
 import { HiOutlineUserGroup } from 'react-icons/hi'
 import { useAuth } from '@/context/AuthContext'
 function Navigationbar() {
-    const [open, setOpen] = useState(true)
+    const [open, setOpen] = useState(false)
     const { logout } = useAuth()
     const Menus = [
         {

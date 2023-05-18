@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { collection, onSnapshot, getDoc, query } from 'firebase/firestore'
 import { TreeView, TreeItem } from '@mui/lab'
-
+import { deleteCoursesToTheUser } from '@/firebaseFun'
 import { db } from '../firebase'
 import {
     ExpandMore as ExpandMoreIcon,
@@ -121,8 +121,15 @@ function UserCourses({}: Props) {
         setChecked(newChecked)
     }
 
-    const handleDelete = () => {
-        console.log(checked)
+    const handleDelete = async () => {
+        checked.forEach((courCheck) => {
+            const uid = userId
+            const periodId = courCheck.period
+            const anneeId = courCheck.courAnne
+            const courId = courCheck.courdocId
+            //console.log(periodId, anneeId, courId)
+            deleteCoursesToTheUser(uid, periodId, anneeId, courId)
+        })
     }
 
     return (
