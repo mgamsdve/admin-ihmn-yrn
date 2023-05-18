@@ -1,4 +1,10 @@
-import { doc, setDoc, updateDoc, writeBatch } from 'firebase/firestore'
+import {
+    arrayUnion,
+    doc,
+    setDoc,
+    updateDoc,
+    writeBatch,
+} from 'firebase/firestore'
 import { auth, db } from './firebase'
 import { createUserWithEmailAndPassword, getAuth } from 'firebase/auth'
 async function addUser(userData, userMDP) {
@@ -65,5 +71,40 @@ const deleteDocuments = async (collectionName: string, docIds: string[]) => {
 
     await batch.commit()
 }
-export { updateUser, updateProfessor, deleteDocuments }
+
+const addCoursToTheUser = async (
+    userUId: string,
+    anneeId: string,
+    periodId: string,
+    coursId: string
+) => {
+    const courRef = doc(
+        db,
+        'periods',
+        periodId,
+        'annees',
+        anneeId,
+        'cours',
+        coursId
+    )
+    await setDoc(
+        doc(db, 'users', userUId, 'periods', periodId),
+        {
+            annee: arrayUnion(anneeId),
+        },
+        {
+            merge: true,
+        }
+    )
+    await setDoc(
+        doc(db, 'users', userUId, 'periods', periodId, 'cours', coursId),
+        {
+            cour: courRef,
+            anneeDuCour: anneeId,
+        }
+    )
+    const userRef = doc(db, 'users', userUId)
+    await updateDoc(courRef, { eleves: arrayUnion(userRef) })
+}
+export { updateUser, updateProfessor, deleteDocuments, addCoursToTheUser }
 export default addUser

@@ -13,28 +13,52 @@ import {
 import { StyledTreeItem, StyledTreeView } from '@/Components/StyledTreeView'
 import { ChevronRight, ExpandMore } from '@mui/icons-material'
 import { Checkbox } from '@mui/material'
+import { addCoursToTheUser } from '@/firebaseFun'
+import { useRouter } from 'next/router'
 
 type Props = {}
 
-function NewCourseToTheUserDialog({}: Props) {
+function NewCourseToTheUserDialog({ handleClose }) {
+    const router = useRouter()
+    const userId = router.query.id.toString()
     const [periodsData, setPeriodsData] = useState([])
     const [anneeData, setAnneeData] = useState({})
     const [coursData, setCoursData] = useState({})
-    const [selectedCourses, setSelectedCourses] = useState([])
+    const [checked, setChecked] = useState([])
 
-    const handleToggle = (value) => () => {
-        const currentIndex = selectedCourses.indexOf(value)
-        const newChecked = [...selectedCourses]
+    const handleToggle = (period, annee, courdocId) => () => {
+        const currentIndex = checked.findIndex(
+            (item) =>
+                item.period === period &&
+                item.annee === annee &&
+                item.courdocId === courdocId
+        )
+        const newChecked = [...checked]
 
         if (currentIndex === -1) {
-            newChecked.push(value)
+            newChecked.push({ period, annee, courdocId })
         } else {
             newChecked.splice(currentIndex, 1)
         }
 
-        setSelectedCourses(newChecked)
+        setChecked(newChecked)
     }
-    const handleAdd = () => {}
+    const handleAdd = async () => {
+        try {
+            await checked.forEach((cour) => {
+                addCoursToTheUser(
+                    userId,
+                    cour.annee,
+                    cour.period,
+                    cour.courdocId
+                )
+            })
+
+            handleClose()
+        } catch (e) {
+            console.log(e)
+        }
+    }
 
     useEffect(() => {
         const periodsdocsquery = query(collection(db, 'periods'))
@@ -94,7 +118,7 @@ function NewCourseToTheUserDialog({}: Props) {
         <div>
             <button
                 onClick={handleAdd}
-                className="bg-blue-50 hover:text-blue-500 hover:bg-blue-100 duration-500 p-2 rounded-md text-blue-400 font-semibold"
+                className="bg-green-50 hover:text-green-500 hover:bg-green-100 duration-500 p-2 rounded-md text-green-400 font-semibold"
             >
                 Ajouter les cours selectionnees
             </button>
@@ -126,11 +150,19 @@ function NewCourseToTheUserDialog({}: Props) {
                                                     <div>
                                                         <Checkbox
                                                             checked={
-                                                                selectedCourses.indexOf(
-                                                                    cour.courdocId
+                                                                checked.findIndex(
+                                                                    (item) =>
+                                                                        item.period ===
+                                                                            period &&
+                                                                        item.annee ===
+                                                                            annee &&
+                                                                        item.courdocId ===
+                                                                            cour.courdocId
                                                                 ) !== -1
                                                             }
                                                             onChange={handleToggle(
+                                                                period,
+                                                                annee,
                                                                 cour.courdocId
                                                             )}
                                                         />

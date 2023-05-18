@@ -59,7 +59,7 @@ function UserCourses({}: Props) {
                                 )
                                 coursData.push({
                                     id: referencedCoursDoc.id,
-
+                                    anneeDuCour: coursDoc.data().anneeDuCour,
                                     nomDuCour:
                                         referencedCoursDoc.data().nomDuCour,
                                     // Add other cours fields here
@@ -80,10 +80,6 @@ function UserCourses({}: Props) {
 
     const [checked, setChecked] = useState([])
     const [searchTerm, setSearchTerm] = useState('')
-
-    const handleToggle = (event, nodeIds) => {
-        setChecked(nodeIds)
-    }
 
     const handleSearchChange = (event) => {
         setSearchTerm(event.target.value)
@@ -107,6 +103,28 @@ function UserCourses({}: Props) {
         setOpen(false)
     }
 
+    const handleToggle = (period, annee, courdocId, courAnne) => () => {
+        const currentIndex = checked.findIndex(
+            (item) =>
+                item.period === period &&
+                item.annee === annee &&
+                item.courdocId === courdocId
+        )
+        const newChecked = [...checked]
+
+        if (currentIndex === -1) {
+            newChecked.push({ period, annee, courdocId, courAnne })
+        } else {
+            newChecked.splice(currentIndex, 1)
+        }
+
+        setChecked(newChecked)
+    }
+
+    const handleDelete = () => {
+        console.log(checked)
+    }
+
     return (
         <>
             <div className="shadow-lg rounded-lg p-7 w-full bg-white">
@@ -123,7 +141,10 @@ function UserCourses({}: Props) {
                     >
                         Ajouter des cours
                     </button>
-                    <button className="text-red-600 hover:bg-red-50 rounded-sm p-2 duration-300">
+                    <button
+                        onClick={handleDelete}
+                        className="text-red-600 hover:bg-red-50 rounded-sm p-2 duration-300"
+                    >
                         Supprimer des cours
                     </button>
                 </div>
@@ -131,8 +152,6 @@ function UserCourses({}: Props) {
                     <StyledTreeView
                         defaultCollapseIcon={<ExpandMoreIcon />}
                         defaultExpandIcon={<ChevronRightIcon />}
-                        onNodeSelect={handleToggle}
-                        multiSelect
                     >
                         {filteredPeriods.map((period) => (
                             <StyledTreeItem
@@ -141,11 +160,6 @@ function UserCourses({}: Props) {
                                 nodeId={period.id}
                                 label={
                                     <div>
-                                        <Checkbox
-                                            checked={checked.includes(
-                                                period.id
-                                            )}
-                                        />
                                         {` ${period.id} - ${period.annee}`}
                                     </div>
                                 }
@@ -158,8 +172,22 @@ function UserCourses({}: Props) {
                                         label={
                                             <div>
                                                 <Checkbox
-                                                    checked={checked.includes(
-                                                        cours.id
+                                                    checked={
+                                                        checked.findIndex(
+                                                            (item) =>
+                                                                item.period ===
+                                                                    period.id &&
+                                                                item.annee ===
+                                                                    period.annee &&
+                                                                item.courdocId ===
+                                                                    cours.id
+                                                        ) !== -1
+                                                    }
+                                                    onChange={handleToggle(
+                                                        period.id,
+                                                        period.annee,
+                                                        cours.id,
+                                                        cours.anneeDuCour
                                                     )}
                                                 />
                                                 {`${cours.nomDuCour}`}
@@ -187,7 +215,7 @@ function UserCourses({}: Props) {
             >
                 <DialogTitle>Ajouter des cours</DialogTitle>
                 <DialogContent>
-                    <NewCourseToTheUserDialog />
+                    <NewCourseToTheUserDialog handleClose={handleClose} />
                 </DialogContent>
             </Dialog>
         </>
