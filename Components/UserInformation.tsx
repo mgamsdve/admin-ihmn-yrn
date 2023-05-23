@@ -82,7 +82,7 @@ function UserInformation() {
     return (
         <div>
             <button
-                className="text-3xl font-bold absolute p-5  text-red-600 hover:text-red-950 duration-300 "
+                className="text-3xl font-bold md:absolute p-5  text-red-600 hover:text-red-950 duration-300 "
                 onClick={handleDeleteUsers}
             >
                 <BsTrash />
@@ -93,7 +93,7 @@ function UserInformation() {
                         <img
                             src={profilePic}
                             alt="Profile Pic"
-                            className="flex rounded-full w-52 h-52"
+                            className="flex rounded-full md:w-52 md:h-52 w-36 h-36"
                         />
                     </div>
                     <h1 className="text-3xl font-bold text-gray-500">

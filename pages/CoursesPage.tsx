@@ -143,11 +143,11 @@ export default function MyTreeView() {
     }
 
     return (
-        <div className="p-7 bg-gray-50 w-full h-screen flex flex-col space-y-5">
-            <div className="bg-white w-full h-20 shadow-md rounded-lg p-7 flex flex-row space-x-5">
+        <div className="p-7 bg-gray-50 w-full h-screen flex flex-col space-y-5 overflow-scroll">
+            <div className="bg-white w-full h-40 md:h-20 shadow-md rounded-lg p-7 flex flex-col md:flex-row space-y-3 md:space-x-5 md:space-y-0">
                 <input
                     placeholder="Rechercher"
-                    className=" w-fit p-2 bg-gray-50 rounded-md"
+                    className=" md:w-fit p-2 bg-gray-50 rounded-md"
                 />
                 <button
                     onClick={handleOpen}
@@ -159,7 +159,7 @@ export default function MyTreeView() {
                     Supprimer des cours
                 </button>
             </div>
-            <div className="bg-white w-full h-full shadow-lg rounded-lg p-7">
+            <div className="bg-white w-full h-full shadow-lg rounded-lg p-7 overflow-scroll">
                 <StyledTreeView
                     defaultCollapseIcon={<ExpandMore />}
                     defaultExpandIcon={<ChevronRight />}

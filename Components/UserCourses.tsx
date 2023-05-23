@@ -135,10 +135,10 @@ function UserCourses({}: Props) {
     return (
         <>
             <div className="shadow-lg rounded-lg p-7 w-full bg-white">
-                <div className="flex flex-row  border-b rounded-md w-full p-5 space-x-5">
+                <div className="flex md:flex-row flex-col border-b rounded-md md:w-full p-5 space-x-5">
                     <input
                         placeholder="Rechercher"
-                        className="p-2 w-fit bg-gray-50 rounded-md"
+                        className="p-2 md:w-fit bg-gray-50 rounded-md"
                         value={searchTerm}
                         onChange={handleSearchChange}
                     />
@@ -155,7 +155,7 @@ function UserCourses({}: Props) {
                         Supprimer des cours
                     </button>
                 </div>
-                <div className="p-5">
+                <div className="p-5 overflow-scroll">
                     <StyledTreeView
                         defaultCollapseIcon={<ExpandMoreIcon />}
                         defaultExpandIcon={<ChevronRightIcon />}
