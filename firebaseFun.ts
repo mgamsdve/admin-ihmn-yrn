@@ -24,6 +24,21 @@ async function addUser(userData, userMDP) {
     }
 }
 
+async function addProfessor(userData, userMDP) {
+    try {
+        const newUser = await createUserWithEmailAndPassword(
+            auth,
+            userData.email,
+            userMDP
+        )
+
+        await setDoc(doc(db, 'profs', newUser.user.uid), userData)
+        //console.log('Document written with ID: ', newUser.user.uid)
+    } catch (e) {
+        console.error('Error adding document: ', e)
+    }
+}
+
 async function updateUser(docId, newuserData) {
     try {
         const docRef = doc(db, 'users', docId)
@@ -42,7 +57,7 @@ async function updateProfessor(docId, newuserData) {
         console.error('Error updating document: ', e)
     }
 }
-updateProfessor
+
 
 async function deleteUser(uid) {
     const response = await fetch('/api/deleteUser', {
@@ -158,5 +173,6 @@ export {
     addPeriodOnly,
     addCourses,
     deleteCoursesToTheUser,
+    addProfessor
 }
 export default addUser

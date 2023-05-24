@@ -1,4 +1,4 @@
-import addUser from '@/firebaseFun'
+import {addProfessor} from '@/firebaseFun'
 import React, { useState } from 'react'
 
 function NewProfessorDialogContent({ handleClose }) {
@@ -23,7 +23,7 @@ function NewProfessorDialogContent({ handleClose }) {
             adresse: adresse,
         }
         const profMDP = mdp
-        await addUser(professorData, profMDP)
+        await addProfessor(professorData, profMDP)
         handleClose()
     }
     return (
