@@ -1,237 +1,264 @@
-import { TreeView, TreeItem } from '@mui/lab'
-import { db } from '../firebase' // importer l'instance de la base de données Firestore
-import { useState, useEffect } from 'react'
+import { TreeView, TreeItem } from "@mui/lab";
+import { db } from "../firebase"; // importer l'instance de la base de données Firestore
+import { useState, useEffect } from "react";
 import {
-    collection,
-    collectionGroup,
-    query,
-    getDocs,
-    onSnapshot,
-    getDoc,
-} from 'firebase/firestore'
-import { StyledTreeItem, StyledTreeView } from '@/Components/StyledTreeView'
-import { ChevronRight, ExpandMore } from '@mui/icons-material'
-import { useRouter } from 'next/router'
-import { Dialog, DialogContent, DialogTitle } from '@mui/material'
-import CoursNewContent from '@/Components/CoursNewContent'
+  collection,
+  collectionGroup,
+  query,
+  getDocs,
+  onSnapshot,
+  getDoc,
+} from "firebase/firestore";
+import { deleteCourses } from '@/firebaseFun'
+import { StyledTreeItem, StyledTreeView } from "@/Components/StyledTreeView";
+import { ChevronRight, ExpandMore } from "@mui/icons-material";
+import { useRouter } from "next/router";
+import { Checkbox, Dialog, DialogContent, DialogTitle } from "@mui/material";
+import CoursNewContent from "@/Components/CoursNewContent";
 
 export default function MyTreeView() {
-    const [periodsData, setPeriodsData] = useState([])
-    const [anneeData, setAnneeData] = useState({})
-    const [coursData, setCoursData] = useState({})
-    const [eleveData, setEleveData] = useState({})
-    const [open, setOpen] = useState(false)
-    const router = useRouter()
-    useEffect(() => {
-        const periodsdocsquery = query(collection(db, 'periods'))
-        onSnapshot(periodsdocsquery, (periodsdocs) => {
-            const periods = []
-            periodsdocs.forEach((perioddoc) => {
-                const periodId = perioddoc.id
-                periods.push(periodId)
-                onSnapshot(
-                    query(collection(db, 'periods', periodId, 'annees')),
-                    (anneesSnapshot) => {
-                        const annees = []
-                        anneesSnapshot.forEach((anneeDoc) => {
-                            const anneeId = anneeDoc.id
-                            annees.push(anneeId)
-                            onSnapshot(
-                                query(
-                                    collection(
-                                        db,
-                                        'periods',
-                                        periodId,
-                                        'annees',
-                                        anneeId,
-                                        'cours'
-                                    )
-                                ),
-                                (coursSnapshot) => {
-                                    const cours = []
-                                    coursSnapshot.forEach((courDoc) => {
-                                        const courId = courDoc.id
-                                        const nomDuCour =
-                                            courDoc.data().nomDuCour
-                                        cours.push({
-                                            nomDuCour: nomDuCour,
-                                            courdocId: courId,
-                                        })
-                                        const eleves =
-                                            courDoc.data().eleves || []
-                                        eleves.forEach((eleveRef) => {
-                                            getDoc(eleveRef).then(
-                                                (eleveDoc: any) => {
-                                                    try {
-                                                        const eleveId =
-                                                            eleveDoc.id
-                                                        const prenom =
-                                                            eleveDoc.data()
-                                                                .prename
+  const [periodsData, setPeriodsData] = useState([]);
+  const [anneeData, setAnneeData] = useState({});
+  const [coursData, setCoursData] = useState({});
+  const [eleveData, setEleveData] = useState({});
+  const [open, setOpen] = useState(false);
+  const router = useRouter();
+  const [checked, setChecked] = useState([])
 
-                                                        const nom =
-                                                            eleveDoc.data().name
-                                                        setEleveData(
-                                                            (prevEleveData) => {
-                                                                if (
-                                                                    prevEleveData[
-                                                                        `${periodId}-${courId}`
-                                                                    ]?.some(
-                                                                        (
-                                                                            eleve
-                                                                        ) =>
-                                                                            eleve.eleveId ===
-                                                                            eleveId
-                                                                    )
-                                                                ) {
-                                                                    return prevEleveData
-                                                                }
-                                                                return {
-                                                                    ...prevEleveData,
-                                                                    [`${periodId}-${courId}`]:
-                                                                        [
-                                                                            ...(prevEleveData[
-                                                                                `${periodId}-${courId}`
-                                                                            ] ||
-                                                                                []),
-                                                                            {
-                                                                                eleveId,
-                                                                                prenom,
-                                                                                nom,
-                                                                            },
-                                                                        ],
-                                                                }
-                                                            }
-                                                        )
-                                                    } catch (e) {
-                                                        console.log('e')
-                                                    }
-                                                }
-                                            )
-                                        })
-                                    })
-                                    setCoursData((prevCoursData) => ({
-                                        ...prevCoursData,
-                                        [periodId]: {
-                                            ...prevCoursData[periodId],
-                                            [anneeId]: cours,
-                                        },
-                                    }))
-                                }
-                            )
-                        })
-                        setAnneeData((prevAnneeData) => ({
-                            ...prevAnneeData,
-                            [periodId]: annees,
-                        }))
-                    }
-                )
-            })
-            setPeriodsData(periods)
-        })
-    }, [])
 
-    const handledoubleuserClick = (userid) => {
-        router.push(`/users/${userid}/UserDetail`)
-    }
 
-    const handleOpen = () => {
-        setOpen(true)
-    }
-    const handleClose = () => {
-        setOpen(false)
-    }
-
-    return (
-        <div className="p-7 bg-gray-50 w-full h-screen flex flex-col space-y-5 overflow-scroll">
-            <div className="bg-white w-full h-40 md:h-20 shadow-md rounded-lg p-7 flex flex-col md:flex-row space-y-3 md:space-x-5 md:space-y-0">
-                <input
-                    placeholder="Rechercher"
-                    className=" md:w-fit p-2 bg-gray-50 rounded-md"
-                />
-                <button
-                    onClick={handleOpen}
-                    className="text-green-600 hover:bg-green-50 rounded-md px-2 duration-300"
-                >
-                    Ajouter un cour
-                </button>
-                <button className="text-red-600 hover:bg-red-50 rounded-md px-2 duration-300">
-                    Supprimer des cours
-                </button>
-            </div>
-            <div className="bg-white w-full h-full shadow-lg rounded-lg p-7 overflow-scroll">
-                <StyledTreeView
-                    defaultCollapseIcon={<ExpandMore />}
-                    defaultExpandIcon={<ChevronRight />}
-                >
-                    {periodsData.map((period) => (
-                        <StyledTreeItem
-                            nodeId={period}
-                            label={period}
-                            key={period}
-                            $cours={true}
-                        >
-                            {(anneeData[period] || []).map((annees) => (
-                                <StyledTreeItem
-                                    nodeId={`${period}-${annees}`}
-                                    label={annees}
-                                    $annee={true}
-                                    key={annees}
-                                >
-                                    {(coursData[period]?.[annees] || []).map(
-                                        (cour) => (
-                                            <TreeItem
-                                                nodeId={`${period}-${annees}-${cour.courdocId}`}
-                                                label={cour.nomDuCour}
-                                                key={cour.courdocId}
-                                            >
-                                                {(
-                                                    eleveData[
-                                                        `${period}-${cour.courdocId}`
-                                                    ] || []
-                                                ).map(
-                                                    ({
-                                                        eleveId,
-                                                        prenom,
-                                                        nom,
-                                                    }) => (
-                                                        <TreeItem
-                                                            nodeId={`${period} ${annees} ${cour.courdocId} ${eleveId} `}
-                                                            label={`${prenom} ${nom} ➜`}
-                                                            key={prenom}
-                                                            onDoubleClick={() =>
-                                                                handledoubleuserClick(
-                                                                    eleveId
-                                                                )
-                                                            }
-                                                        />
-                                                    )
-                                                )}
-                                            </TreeItem>
-                                        )
-                                    )}
-                                </StyledTreeItem>
-                            ))}
-                        </StyledTreeItem>
-                    ))}
-                </StyledTreeView>
-            </div>
-            <Dialog
-                open={open}
-                onClose={handleClose}
-                maxWidth="xl"
-                PaperProps={{
-                    style: {
-                        width: '400px',
-                        height: '700px',
-                    },
-                }}
-            >
-                <DialogTitle>Ajouter un Cour</DialogTitle>
-                <DialogContent>
-                    <CoursNewContent />
-                </DialogContent>
-            </Dialog>
-        </div>
+  const handleToggle = (period, annee, courdocId) => () => {
+    const currentIndex = checked.findIndex(
+      (item) =>
+        item.period === period &&
+        item.annee === annee &&
+        item.courdocId === courdocId
     )
+    const newChecked = [...checked]
+
+    if (currentIndex === -1) {
+      newChecked.push({ period, annee, courdocId })
+    } else {
+      newChecked.splice(currentIndex, 1)
+    }
+    setChecked(newChecked)
+
+  }
+
+  const handleDelete = () => {
+    const yesno = confirm("Etes vous sur de vouloir supprimer le cour ? Attention, tout les eleves qui ont ce cour ne vont plus l'avoir !!!")
+    if (yesno == true) {
+      checked.forEach(async (cour) => {
+        await deleteCourses(cour.period, cour.annee, cour.courdocId)
+      })
+    }
+
+  }
+
+  useEffect(() => {
+    const periodsdocsquery = query(collection(db, "periods"));
+    onSnapshot(periodsdocsquery, (periodsdocs) => {
+      const periods = [];
+      periodsdocs.forEach((perioddoc) => {
+        const periodId = perioddoc.id;
+        periods.push(periodId);
+        onSnapshot(
+          query(collection(db, "periods", periodId, "annees")),
+          (anneesSnapshot) => {
+            const annees = [];
+            anneesSnapshot.forEach((anneeDoc) => {
+              const anneeId = anneeDoc.id;
+              annees.push(anneeId);
+              onSnapshot(
+                query(
+                  collection(
+                    db,
+                    "periods",
+                    periodId,
+                    "annees",
+                    anneeId,
+                    "cours"
+                  )
+                ),
+                (coursSnapshot) => {
+                  const cours = [];
+                  coursSnapshot.forEach((courDoc) => {
+                    const courId = courDoc.id;
+                    const nomDuCour = courDoc.data().nomDuCour;
+                    cours.push({
+                      nomDuCour: nomDuCour,
+                      courdocId: courId,
+                    });
+                    const eleves = courDoc.data().eleves || [];
+                    eleves.forEach((eleveRef) => {
+                      getDoc(eleveRef).then((eleveDoc: any) => {
+                        try {
+                          const eleveId = eleveDoc.id;
+                          const prenom = eleveDoc.data().prename;
+
+                          const nom = eleveDoc.data().name;
+                          setEleveData((prevEleveData) => {
+                            if (
+                              prevEleveData[`${periodId}-${courId}`]?.some(
+                                (eleve) => eleve.eleveId === eleveId
+                              )
+                            ) {
+                              return prevEleveData;
+                            }
+                            return {
+                              ...prevEleveData,
+                              [`${periodId}-${courId}`]: [
+                                ...(prevEleveData[`${periodId}-${courId}`] ||
+                                  []),
+                                {
+                                  eleveId,
+                                  prenom,
+                                  nom,
+                                },
+                              ],
+                            };
+                          });
+                        } catch (e) {
+                          console.log("e");
+                        }
+                      });
+                    });
+                  });
+                  setCoursData((prevCoursData) => ({
+                    ...prevCoursData,
+                    [periodId]: {
+                      ...prevCoursData[periodId],
+                      [anneeId]: cours,
+                    },
+                  }));
+                }
+              );
+            });
+            setAnneeData((prevAnneeData) => ({
+              ...prevAnneeData,
+              [periodId]: annees,
+            }));
+          }
+        );
+      });
+      setPeriodsData(periods);
+    });
+  }, []);
+
+  const handledoubleuserClick = (userid) => {
+    router.push(`/users/${userid}/UserDetail`);
+  };
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  return (
+    <div className="p-7 bg-gray-50 w-full h-screen flex flex-col space-y-5 overflow-scroll">
+      <div className="bg-white w-full h-40 md:h-20 shadow-md rounded-lg p-7 flex flex-col md:flex-row space-y-3 md:space-x-5 md:space-y-0">
+        <input
+          placeholder="Rechercher"
+          className=" md:w-fit p-2 bg-gray-50 rounded-md"
+        />
+        <button
+          onClick={handleOpen}
+          className="text-green-600 hover:bg-green-50 rounded-md px-2 duration-300"
+        >
+          Ajouter un cour
+        </button>
+        <button onClick={handleDelete} className="text-red-600 hover:bg-red-50 rounded-md px-2 duration-300">
+          Supprimer des cours
+        </button>
+      </div>
+      <div className="bg-white w-full h-full shadow-lg rounded-lg p-7 overflow-scroll">
+        <StyledTreeView
+          defaultCollapseIcon={<ExpandMore />}
+          defaultExpandIcon={<ChevronRight />}
+        >
+          {periodsData.map((period) => (
+            <StyledTreeItem
+              nodeId={period}
+              label={period}
+              key={period}
+              // @ts-ignore: suppress implicit any errors
+              $cours={true}
+            >
+              {(anneeData[period] || []).map((annees) => (
+                <StyledTreeItem
+                  nodeId={`${period}-${annees}`}
+                  label={annees}
+                  // @ts-ignore: suppress implicit any errors
+                  $annee={true}
+                  key={annees}
+                >
+
+                  {(coursData[period]?.[annees] || []).map((cour) => (
+                    <TreeItem
+
+                      nodeId={`${period}-${annees}-${cour.courdocId}`}
+                      label={
+                        <div>
+                          <Checkbox
+                            checked={
+                              checked.findIndex(
+                                (item) =>
+                                  item.period ===
+                                  period &&
+                                  item.annee ===
+                                  annees &&
+                                  item.courdocId ===
+                                  cour.courdocId
+                              ) !== -1
+                            }
+                            onChange={handleToggle(
+                              period,
+                              annees,
+                              cour.courdocId,
+
+                            )}
+                          />
+                          {`${cour.nomDuCour}`}
+                        </div>
+                      }
+                      key={cour.courdocId}
+                    >
+                      {(eleveData[`${period}-${cour.courdocId}`] || []).map(
+                        ({ eleveId, prenom, nom }) => (
+                          <TreeItem
+                            nodeId={`${period} ${annees} ${cour.courdocId} ${eleveId} `}
+                            label={`${prenom} ${nom} ➜`}
+                            key={prenom}
+                            onDoubleClick={() => handledoubleuserClick(eleveId)}
+                          />
+                        )
+                      )}
+                    </TreeItem>
+                  ))}
+                </StyledTreeItem>
+              ))}
+            </StyledTreeItem>
+          ))}
+        </StyledTreeView>
+      </div>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        maxWidth="xl"
+        PaperProps={{
+          style: {
+            width: "400px",
+            height: "700px",
+          },
+        }}
+      >
+        <DialogTitle>Ajouter un Cour</DialogTitle>
+        <DialogContent>
+          <CoursNewContent />
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
 }

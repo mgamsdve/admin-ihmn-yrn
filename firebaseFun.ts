@@ -1,10 +1,15 @@
 import {
     arrayRemove,
     arrayUnion,
+    collection,
     deleteDoc,
     doc,
+    getDoc,
+    getDocs,
+    query,
     setDoc,
     updateDoc,
+    where,
     writeBatch,
 } from 'firebase/firestore'
 import { auth, db } from './firebase'
@@ -165,6 +170,39 @@ const deleteCoursesToTheUser = async (userId, periodId, anneId, coursId) => {
     await deleteDoc(docRef)
 }
 
+const deleteCourses = async (periodId, anneeId, courId) => {
+    const courRefInPeriod = doc(db, 'periods', periodId, 'annees', anneeId, 'cours', courId)
+    const elevesInCourses = []
+
+    const docSnap = await getDoc(courRefInPeriod);
+
+    if (docSnap.exists()) {
+        const data = docSnap.data();
+        const elevesRefs = data.eleves;
+        if (elevesRefs) {
+            const elevesQuery = query(collection(db, "users"), where("__name__", "in", elevesRefs));
+            const elevesSnap = await getDocs(elevesQuery);
+
+            elevesSnap.forEach((doc) => {
+                elevesInCourses.push(doc.id)
+            });
+        }
+
+
+    } else {
+        console.log("No such document!");
+    }
+
+    elevesInCourses.forEach(async (eleveId) => {
+        //console.log(eleveId)
+        const courForTheEleves = doc(db, 'users', eleveId, 'periods', periodId, 'cours', courId)
+        await deleteDoc(courForTheEleves)
+    })
+
+    await deleteDoc(courRefInPeriod)
+
+}
+
 export {
     updateUser,
     updateProfessor,
@@ -173,6 +211,7 @@ export {
     addPeriodOnly,
     addCourses,
     deleteCoursesToTheUser,
-    addProfessor
+    addProfessor,
+    deleteCourses
 }
 export default addUser

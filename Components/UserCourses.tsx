@@ -20,7 +20,7 @@ import NewCourseToTheUserDialog from './NewCourseToTheUserDialog'
 
 type Props = {}
 
-function UserCourses({}: Props) {
+function UserCourses({ }: Props) {
     const router = useRouter()
     const userId = router.query.id.toString()
     const [periods, setPeriods] = useState([])
@@ -183,11 +183,11 @@ function UserCourses({}: Props) {
                                                         checked.findIndex(
                                                             (item) =>
                                                                 item.period ===
-                                                                    period.id &&
+                                                                period.id &&
                                                                 item.annee ===
-                                                                    period.annee &&
+                                                                period.annee &&
                                                                 item.courdocId ===
-                                                                    cours.id
+                                                                cours.id
                                                         ) !== -1
                                                     }
                                                     onChange={handleToggle(
