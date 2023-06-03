@@ -57,65 +57,13 @@ pouvoir s inscrire au examens avec la fiche
 
 prof horaires du cours + touts les élèves dedans
 prof peuvent voir certaines choses vue sur les résultats
+formations/stage= ajouter un nom plus heure du stages maximum infini par personne
 
-import React, { useState } from 'react';
-import Checkbox from '@mui/material/Checkbox';
-import TreeView from '@mui/lab/TreeView';
-import TreeItem from '@mui/lab/TreeItem';
+cours  suplement + formations/stage + tfe + exam final+  stage d'été et deux brevet bs et beps
 
-function MyTreeView() {
-const [checked, setChecked] = useState([]);
+tfe = 
 
-const handleToggle = (period, annee, courdocId) => () => {
-const currentIndex = checked.findIndex(
-(item) =>
-item.period === period &&
-item.annee === annee &&
-item.courdocId === courdocId
-);
-const newChecked = [...checked];
 
-if (currentIndex === -1) {
-newChecked.push({ period, annee, courdocId });
-} else {
-newChecked.splice(currentIndex, 1);
-}
+pour inscription session : choisir année + periods a envoyé, mettre la date de la session, choisir les cours a proposer  en fonction de la periods et l année 
 
-setChecked(newChecked);
-};
-
-return (
-<TreeView>
-{periodsData.map((period) => (
-<TreeItem nodeId={period} label={period} key={period}>
-{(anneeData[period] || []).map((annee) => (
-<TreeItem nodeId={`${period}-${annee}`} label={annee} key={annee}>
-{(coursData[period]?.[annee] || []).map((cour) => (
-<TreeItem
-nodeId={`${period}-${annee}-${cour.courdocId}`}
-label={
-<div>
-<Checkbox
-checked={
-checked.findIndex(
-(item) =>
-item.period === period &&
-item.annee === annee &&
-item.courdocId === cour.courdocId
-) !== -1
-}
-onChange={handleToggle(period, annee, cour.courdocId)}
-/>
-{cour.nomDuCour}
-</div>
-}
-key={cour.courdocId}
-/>
-))}
-</TreeItem>
-))}
-</TreeItem>
-))}
-</TreeView>
-);
-}
+3 session 4 date d examens  
