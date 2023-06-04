@@ -6,10 +6,11 @@ import {
   collectionGroup,
   query,
   getDocs,
+  doc,
   onSnapshot,
   getDoc,
 } from "firebase/firestore";
-import { deleteCourses } from '@/firebaseFun'
+import { deleteCourses } from "@/firebaseFun";
 import { StyledTreeItem, StyledTreeView } from "@/Components/StyledTreeView";
 import { ChevronRight, ExpandMore } from "@mui/icons-material";
 import { useRouter } from "next/router";
@@ -23,9 +24,7 @@ export default function MyTreeView() {
   const [eleveData, setEleveData] = useState({});
   const [open, setOpen] = useState(false);
   const router = useRouter();
-  const [checked, setChecked] = useState([])
-
-
+  const [checked, setChecked] = useState([]);
 
   const handleToggle = (period, annee, courdocId) => () => {
     const currentIndex = checked.findIndex(
@@ -33,27 +32,27 @@ export default function MyTreeView() {
         item.period === period &&
         item.annee === annee &&
         item.courdocId === courdocId
-    )
-    const newChecked = [...checked]
+    );
+    const newChecked = [...checked];
 
     if (currentIndex === -1) {
-      newChecked.push({ period, annee, courdocId })
+      newChecked.push({ period, annee, courdocId });
     } else {
-      newChecked.splice(currentIndex, 1)
+      newChecked.splice(currentIndex, 1);
     }
-    setChecked(newChecked)
-
-  }
+    setChecked(newChecked);
+  };
 
   const handleDelete = () => {
-    const yesno = confirm("Etes vous sur de vouloir supprimer le cour ? Attention, tout les eleves qui ont ce cour ne vont plus l'avoir !!!")
+    const yesno = confirm(
+      "Etes vous sur de vouloir supprimer le cour ? Attention, tout les eleves qui ont ce cour ne vont plus l'avoir !!!"
+    );
     if (yesno == true) {
       checked.forEach(async (cour) => {
-        await deleteCourses(cour.period, cour.annee, cour.courdocId)
-      })
+        await deleteCourses(cour.period, cour.annee, cour.courdocId);
+      });
     }
-
-  }
+  };
 
   useEffect(() => {
     const periodsdocsquery = query(collection(db, "periods"));
@@ -82,55 +81,77 @@ export default function MyTreeView() {
                 ),
                 (coursSnapshot) => {
                   const cours = [];
+                  const promises = [];
                   coursSnapshot.forEach((courDoc) => {
                     const courId = courDoc.id;
                     const nomDuCour = courDoc.data().nomDuCour;
-                    cours.push({
-                      nomDuCour: nomDuCour,
-                      courdocId: courId,
-                    });
+                    const profsref = courDoc.data().profDuCour;
+                    if (profsref) {
+                      promises.push(
+                        getDoc(profsref).then((profData) => {
+                          if (profData.exists()) {
+                            const profName = profData.data().name;
+                            const profPrename = profData.data().prename;
+                            const PN = `${profName} ${profPrename}`;
+                            const profId = profData.id;
+                            cours.push({
+                              nomDuCour: nomDuCour,
+                              courdocId: courId,
+                              profDuCour: PN,
+                              profCourId: profId,
+                            });
+                          }
+                        })
+                      );
+                    } else {
+                      cours.push({
+                        nomDuCour: nomDuCour,
+                        courdocId: courId,
+                        profDuCour: "",
+                        profCourId: "",
+                      });
+                    }
                     const eleves = courDoc.data().eleves || [];
                     eleves.forEach((eleveRef) => {
-                      getDoc(eleveRef).then((eleveDoc: any) => {
-                        try {
-                          const eleveId = eleveDoc.id;
-                          const prenom = eleveDoc.data().prename;
-
-                          const nom = eleveDoc.data().name;
-                          setEleveData((prevEleveData) => {
-                            if (
-                              prevEleveData[`${periodId}-${courId}`]?.some(
-                                (eleve) => eleve.eleveId === eleveId
-                              )
-                            ) {
-                              return prevEleveData;
-                            }
-                            return {
-                              ...prevEleveData,
-                              [`${periodId}-${courId}`]: [
-                                ...(prevEleveData[`${periodId}-${courId}`] ||
-                                  []),
-                                {
-                                  eleveId,
-                                  prenom,
-                                  nom,
-                                },
-                              ],
-                            };
-                          });
-                        } catch (e) {
-                          console.log("e");
-                        }
-                      });
+                      promises.push(
+                        getDoc(eleveRef).then((eleveDoc: any) => {
+                          try {
+                            const eleveId = eleveDoc.id;
+                            const prenom = eleveDoc.data().prename;
+                            const nom = eleveDoc.data().name;
+                            setEleveData((prevEleveData) => {
+                              if (
+                                prevEleveData[`${periodId}-${courId}`]?.some(
+                                  (eleve) => eleve.eleveId === eleveId
+                                )
+                              ) {
+                                return prevEleveData;
+                              }
+                              return {
+                                ...prevEleveData,
+                                [`${periodId}-${courId}`]: [
+                                  ...(prevEleveData[`${periodId}-${courId}`] ||
+                                    []),
+                                  { eleveId, prenom, nom },
+                                ],
+                              };
+                            });
+                          } catch (e) {
+                            console.log("e");
+                          }
+                        })
+                      );
                     });
                   });
-                  setCoursData((prevCoursData) => ({
-                    ...prevCoursData,
-                    [periodId]: {
-                      ...prevCoursData[periodId],
-                      [anneeId]: cours,
-                    },
-                  }));
+                  Promise.all(promises).then(() => {
+                    setCoursData((prevCoursData) => ({
+                      ...prevCoursData,
+                      [periodId]: {
+                        ...prevCoursData[periodId],
+                        [anneeId]: cours,
+                      },
+                    }));
+                  });
                 }
               );
             });
@@ -147,6 +168,9 @@ export default function MyTreeView() {
 
   const handledoubleuserClick = (userid) => {
     router.push(`/users/${userid}/UserDetail`);
+  };
+  const handledoubleprofClick = (profId) => {
+    router.push(`/users/${profId}/ProfDetail`);
   };
 
   const handleOpen = () => {
@@ -169,7 +193,10 @@ export default function MyTreeView() {
         >
           Ajouter un cour
         </button>
-        <button onClick={handleDelete} className="text-red-600 hover:bg-red-50 rounded-md px-2 duration-300">
+        <button
+          onClick={handleDelete}
+          className="text-red-600 hover:bg-red-50 rounded-md px-2 duration-300"
+        >
           Supprimer des cours
         </button>
       </div>
@@ -194,10 +221,8 @@ export default function MyTreeView() {
                   $annee={true}
                   key={annees}
                 >
-
                   {(coursData[period]?.[annees] || []).map((cour) => (
                     <TreeItem
-
                       nodeId={`${period}-${annees}-${cour.courdocId}`}
                       label={
                         <div>
@@ -205,25 +230,28 @@ export default function MyTreeView() {
                             checked={
                               checked.findIndex(
                                 (item) =>
-                                  item.period ===
-                                  period &&
-                                  item.annee ===
-                                  annees &&
-                                  item.courdocId ===
-                                  cour.courdocId
+                                  item.period === period &&
+                                  item.annee === annees &&
+                                  item.courdocId === cour.courdocId
                               ) !== -1
                             }
                             onChange={handleToggle(
                               period,
                               annees,
-                              cour.courdocId,
-
+                              cour.courdocId
                             )}
                           />
-                          {`${cour.nomDuCour}`}
+                          {`${cour.nomDuCour} ${
+                            cour.profDuCour === ""
+                              ? ""
+                              : `, par ${cour.profDuCour} ➜`
+                          }`}
                         </div>
                       }
                       key={cour.courdocId}
+                      onDoubleClick={() =>
+                        handledoubleprofClick(cour.profCourId)
+                      }
                     >
                       {(eleveData[`${period}-${cour.courdocId}`] || []).map(
                         ({ eleveId, prenom, nom }) => (
@@ -256,7 +284,7 @@ export default function MyTreeView() {
       >
         <DialogTitle>Ajouter un Cour</DialogTitle>
         <DialogContent>
-          <CoursNewContent />
+          <CoursNewContent handleClose={handleClose} />
         </DialogContent>
       </Dialog>
     </div>
