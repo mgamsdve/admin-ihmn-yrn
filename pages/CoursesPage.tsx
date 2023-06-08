@@ -25,6 +25,8 @@ export default function MyTreeView() {
   const [open, setOpen] = useState(false);
   const router = useRouter();
   const [checked, setChecked] = useState([]);
+  const [searchValue, setSearchValue] = useState("");
+  const [searchValueperiods, setSearchValuePeriods] = useState("");
 
   const handleToggle = (period, annee, courdocId) => () => {
     const currentIndex = checked.findIndex(
@@ -90,8 +92,9 @@ export default function MyTreeView() {
                       promises.push(
                         getDoc(profsref).then((profData) => {
                           if (profData.exists()) {
-                            const profName = profData.data().name;
-                            const profPrename = profData.data().prename;
+                            const datatta: any = profData.data();
+                            const profName = datatta.name;
+                            const profPrename = datatta.prename;
                             const PN = `${profName} ${profPrename}`;
                             const profId = profData.id;
                             cours.push({
@@ -180,12 +183,31 @@ export default function MyTreeView() {
     setOpen(false);
   };
 
+  const filteredPeriods = periodsData.filter((period) =>
+    period.toLowerCase().includes(searchValueperiods.toLowerCase())
+  );
+  const filteredCours = (data) =>
+    data.filter((cour) =>
+      cour.nomDuCour.toLowerCase().includes(searchValue.toLowerCase())
+    );
   return (
     <div className="p-7 bg-gray-50 w-full h-screen flex flex-col space-y-5 overflow-scroll">
       <div className="bg-white w-full h-40 md:h-20 shadow-md rounded-lg p-7 flex flex-col md:flex-row space-y-3 md:space-x-5 md:space-y-0">
         <input
-          placeholder="Rechercher"
+          placeholder="Rechercher dans les cours"
           className=" md:w-fit p-2 bg-gray-50 rounded-md"
+          value={searchValue}
+          onChange={(e) => {
+            setSearchValue(e.target.value);
+          }}
+        />
+        <input
+          placeholder="Periods"
+          className=" md:w-20 bg-gray-50 p-2 rounded-md"
+          value={searchValueperiods}
+          onChange={(e) => {
+            setSearchValuePeriods(e.target.value);
+          }}
         />
         <button
           onClick={handleOpen}
@@ -205,7 +227,7 @@ export default function MyTreeView() {
           defaultCollapseIcon={<ExpandMore />}
           defaultExpandIcon={<ChevronRight />}
         >
-          {periodsData.map((period) => (
+          {filteredPeriods.map((period) => (
             <StyledTreeItem
               nodeId={period}
               label={period}
@@ -221,50 +243,56 @@ export default function MyTreeView() {
                   $annee={true}
                   key={annees}
                 >
-                  {(coursData[period]?.[annees] || []).map((cour) => (
-                    <TreeItem
-                      nodeId={`${period}-${annees}-${cour.courdocId}`}
-                      label={
-                        <div>
-                          <Checkbox
-                            checked={
-                              checked.findIndex(
-                                (item) =>
-                                  item.period === period &&
-                                  item.annee === annees &&
-                                  item.courdocId === cour.courdocId
-                              ) !== -1
-                            }
-                            onChange={handleToggle(
-                              period,
-                              annees,
-                              cour.courdocId
-                            )}
-                          />
-                          {`${cour.nomDuCour} ${
-                            cour.profDuCour === ""
-                              ? ""
-                              : `, par ${cour.profDuCour} ➜`
-                          }`}
-                        </div>
-                      }
-                      key={cour.courdocId}
-                      onDoubleClick={() =>
-                        handledoubleprofClick(cour.profCourId)
-                      }
-                    >
-                      {(eleveData[`${period}-${cour.courdocId}`] || []).map(
-                        ({ eleveId, prenom, nom }) => (
-                          <TreeItem
-                            nodeId={`${period} ${annees} ${cour.courdocId} ${eleveId} `}
-                            label={`${prenom} ${nom} ➜`}
-                            key={prenom}
-                            onDoubleClick={() => handledoubleuserClick(eleveId)}
-                          />
-                        )
-                      )}
-                    </TreeItem>
-                  ))}
+                  {filteredCours(coursData[period]?.[annees] || []).map(
+                    (cour) => (
+                      <TreeItem
+                        nodeId={`${period}-${annees}-${cour.courdocId}`}
+                        label={
+                          <div>
+                            <Checkbox
+                              checked={
+                                checked.findIndex(
+                                  (item) =>
+                                    item.period === period &&
+                                    item.annee === annees &&
+                                    item.courdocId === cour.courdocId
+                                ) !== -1
+                              }
+                              onChange={handleToggle(
+                                period,
+                                annees,
+                                cour.courdocId
+                              )}
+                            />
+                            {`${cour.nomDuCour} ${
+                              cour.profDuCour === ""
+                                ? ""
+                                : `, par ${cour.profDuCour} ➜`
+                            }`}
+                          </div>
+                        }
+                        key={cour.courdocId}
+                        onDoubleClick={() => {
+                          if (cour.profDuCour) {
+                            handledoubleprofClick(cour.profCourId);
+                          }
+                        }}
+                      >
+                        {(eleveData[`${period}-${cour.courdocId}`] || []).map(
+                          ({ eleveId, prenom, nom }) => (
+                            <TreeItem
+                              nodeId={`${period} ${annees} ${cour.courdocId} ${eleveId} `}
+                              label={`${prenom} ${nom} ➜`}
+                              key={prenom}
+                              onDoubleClick={() =>
+                                handledoubleuserClick(eleveId)
+                              }
+                            />
+                          )
+                        )}
+                      </TreeItem>
+                    )
+                  )}
                 </StyledTreeItem>
               ))}
             </StyledTreeItem>

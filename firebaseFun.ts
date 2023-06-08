@@ -3,6 +3,7 @@ import {
   arrayUnion,
   collection,
   deleteDoc,
+  deleteField,
   doc,
   getDoc,
   getDocs,
@@ -151,10 +152,36 @@ const addCourses = async (periods, annee, nomDuCour, profId?) => {
         profDuCour: profDuCourDoc,
       }
     );
-    await updateDoc(profDuCourDoc, {
-      cours: arrayUnion(
-        doc(db, "periods", periods, "annees", annee, "cours", nomDuCour)
-      ),
+
+    const courRef = doc(
+      db,
+      "periods",
+      periods,
+      "annees",
+      annee,
+      "cours",
+      nomDuCour
+    );
+
+    await setDoc(doc(db, "profs", profId, "periods", periods), {});
+    await setDoc(
+      doc(db, "profs", profId, "periods", periods, "annees", annee),
+      {}
+    );
+
+    const courRefDuProfDuCour = doc(
+      db,
+      "profs",
+      profId,
+      "periods",
+      periods,
+      "annees",
+      annee,
+      "cours",
+      nomDuCour
+    );
+    await setDoc(courRefDuProfDuCour, {
+      cour: courRef,
     });
   }
 };
@@ -217,9 +244,16 @@ const deleteCourses = async (periodId, anneeId, courId) => {
     const profDuCour = data.profDuCour;
     if (profDuCour === "") {
     } else {
-      await updateDoc(profDuCour, {
-        cours: arrayRemove(courRefInPeriod),
-      });
+      const courDocInProfPeriods = doc(
+        profDuCour,
+        "periods",
+        periodId,
+        "annees",
+        anneeId,
+        "cours",
+        courId
+      );
+      await deleteDoc(courDocInProfPeriods);
     }
   } else {
     console.log("No such document!");
@@ -242,6 +276,75 @@ const deleteCourses = async (periodId, anneeId, courId) => {
   await deleteDoc(courRefInPeriod);
 };
 
+const addCourseToTheProffesor = async (
+  profUId: string,
+  anneeId: string,
+  periodId: string,
+  coursId: string
+) => {
+  const courRef = doc(
+    db,
+    "periods",
+    periodId,
+    "annees",
+    anneeId,
+    "cours",
+    coursId
+  );
+  await setDoc(
+    doc(db, "profs", profUId, "periods", periodId, "annees", anneeId),
+    {}
+  );
+  await setDoc(
+    doc(
+      db,
+      "profs",
+      profUId,
+      "periods",
+      periodId,
+      "annees",
+      anneeId,
+      "cours",
+      coursId
+    ),
+    {
+      cour: courRef,
+    }
+  );
+  await updateDoc(courRef, {
+    profDuCour: doc(db, "profs", profUId),
+  });
+};
+
+const deleteCourseToTheProfessor = async (
+  profId,
+  periodId,
+  anneId,
+  coursId
+) => {
+  // console.log(profId, periodId, anneId, coursId);
+  const profref = doc(
+    db,
+    "profs",
+    profId,
+    "periods",
+    periodId,
+    "annees",
+    anneId,
+    "cours",
+    coursId
+  );
+  if (db) {
+    await deleteDoc(profref);
+    await updateDoc(
+      doc(db, "periods", periodId, "annees", anneId, "cours", coursId),
+      {
+        profDuCour: deleteField(),
+      }
+    );
+  }
+};
+
 export {
   updateUser,
   updateProfessor,
@@ -250,7 +353,9 @@ export {
   addPeriodOnly,
   addCourses,
   deleteCoursesToTheUser,
+  deleteCourseToTheProfessor,
   addProfessor,
   deleteCourses,
+  addCourseToTheProffesor,
 };
 export default addUser;
