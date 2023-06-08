@@ -29,7 +29,7 @@ function ProfCourses({}: Props) {
   //
 
   useEffect(() => {
-    const periodsdocsquery = query(collection(db, "periods"));
+    const periodsdocsquery = query(collection(db, "profs", profId, "periods"));
     onSnapshot(periodsdocsquery, (periodsdocs) => {
       const periods = [];
       periodsdocs.forEach((perioddoc) => {
