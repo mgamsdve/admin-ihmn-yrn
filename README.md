@@ -1,3 +1,5 @@
+
+'''
 Did :
     Auth state and protected Route 
     Simple Views on the students : 
@@ -35,3 +37,4 @@ Didn't :
     Exams inscription to the session
     whatsapp/signal links
     Stages/formations of 32 hours 
+'''
