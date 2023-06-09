@@ -10,7 +10,6 @@ Did :
         - Can add, remove courses that are created
         - All courses are in their periods and in their year
         - Can search on his courses
-
         - Can Change his personal info (name, surname, birthday, Year, email, phone, adresses)
         - Delete the Sutudent        
     Views with courses, an treeview with the periods, then the years then the courses folowed by the name of his profs, then the students that are in :
@@ -22,7 +21,6 @@ Did :
         - Can add profs
         - Can remove profs
         - doubleclick redirect to the big views of that prof
-    
     Big views on proffessor :
         - Can modify their information
         - Can add an courses that they do
