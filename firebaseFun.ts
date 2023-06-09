@@ -291,6 +291,7 @@ const addCourseToTheProffesor = async (
     "cours",
     coursId
   );
+  await setDoc(doc(db, "profs", profUId, "periods", periodId), {});
   await setDoc(
     doc(db, "profs", profUId, "periods", periodId, "annees", anneeId),
     {}
