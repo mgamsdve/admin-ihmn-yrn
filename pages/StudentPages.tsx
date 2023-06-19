@@ -8,6 +8,7 @@ import { db } from "@/firebase";
 import addUser, { deleteDocuments } from "../firebaseFun";
 import { useRouter } from "next/router";
 import NewUserDialogContent from "@/Components/NewUserDialogContent";
+import Image from "next/image";
 export default function StudentDataGrid() {
   const [users, setUsers] = useState([]);
   const [open, setOpen] = useState(false);
@@ -76,7 +77,9 @@ export default function StudentDataGrid() {
       width: 130,
 
       renderCell: (params) => (
-        <img
+        <Image
+          width={90}
+          height={90}
           src={
             params.value
               ? params.value

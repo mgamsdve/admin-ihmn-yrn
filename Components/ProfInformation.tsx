@@ -4,6 +4,7 @@ import { doc, getDoc, onSnapshot } from "firebase/firestore";
 import { db } from "@/firebase";
 import { updateProfessor, deleteDocuments } from "@/firebaseFun";
 import { BsTrash } from "react-icons/bs";
+import Image from "next/image";
 
 function ProfInformation() {
   const router = useRouter();
@@ -87,7 +88,9 @@ function ProfInformation() {
       <div className="flex flex-col bg-white h-[850px] rounded-xl">
         <div className="flex flex-col mt-14 sm:min-w-[420px] w-fit space-y-3 shadow-lg p-7 h-[850px]  rounded-md">
           <div className="flex justify-center">
-            <img
+            <Image
+              width={210}
+              height={210}
               src={profilePic}
               alt="Profile Pic"
               className="flex rounded-full w-52 h-52"

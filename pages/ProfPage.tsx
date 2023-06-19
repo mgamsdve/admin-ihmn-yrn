@@ -7,6 +7,7 @@ import { StripedDataGrid } from "@/Components/StrippedDataGrid";
 import { db } from "@/firebase";
 import { deleteDocuments } from "../firebaseFun";
 import { useRouter } from "next/router";
+import Image from "next/image";
 import NewProfessorDialogContent from "@/Components/NewProfessorDialogContent";
 export default function StudentDataGrid() {
   const [users, setUsers] = useState([]);
@@ -76,12 +77,14 @@ export default function StudentDataGrid() {
       width: 130,
 
       renderCell: (params) => (
-        <img
+        <Image
           src={
             params.value
               ? params.value
               : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460__340.png"
           }
+          width={90}
+          height={90}
           alt="Profile Pic"
           className="rounded-full w-11 h-11"
         />

@@ -4,6 +4,7 @@ import { doc, getDoc, onSnapshot } from "firebase/firestore";
 import { db } from "@/firebase";
 import { updateUser, deleteDocuments } from "@/firebaseFun";
 import { BsTrash } from "react-icons/bs";
+import Image from "next/image";
 
 function UserInformation() {
   const router = useRouter();
@@ -90,7 +91,9 @@ function UserInformation() {
       <div className="flex flex-col bg-white rounded-xl h-[850px] ">
         <div className="flex flex-col mt-14 sm:min-w-[420px] w-fit space-y-2 shadow-lg p-7 h-[850px]  rounded-md">
           <div className="flex justify-center ">
-            <img
+            <Image
+              width={210}
+              height={210}
               src={profilePic}
               alt="Profile Pic"
               className="flex rounded-full md:w-52 md:h-52 w-36 h-36"
