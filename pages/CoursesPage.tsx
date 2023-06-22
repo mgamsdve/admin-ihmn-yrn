@@ -272,9 +272,11 @@ export default function MyTreeView() {
                           </div>
                         }
                         key={cour.courdocId}
-                        onDoubleClick={() => {
-                          if (cour.profDuCour) {
-                            handledoubleprofClick(cour.profCourId);
+                        onClick={(e) => {
+                          if (e.shiftKey) {
+                            if (cour.profDuCour) {
+                              handledoubleprofClick(cour.profCourId);
+                            }
                           }
                         }}
                       >
