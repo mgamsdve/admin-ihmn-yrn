@@ -93,7 +93,8 @@ function ProfInformation() {
               height={210}
               src={profilePic}
               alt="Profile Pic"
-              className="flex rounded-full w-52 h-52"
+              className="transition-opacity opacity-0 duration-[1s] flex rounded-full w-52 h-52"
+              onLoadingComplete={(image) => image.classList.remove("opacity-0")}
             />
           </div>
           <h1 className="text-3xl font-bold text-gray-500">

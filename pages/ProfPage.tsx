@@ -78,15 +78,16 @@ export default function StudentDataGrid() {
 
       renderCell: (params) => (
         <Image
+          width={90}
+          height={90}
           src={
             params.value
               ? params.value
               : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460__340.png"
           }
-          width={90}
-          height={90}
           alt="Profile Pic"
-          className="rounded-full w-11 h-11"
+          className="transition-opacity opacity-0 duration-[1s] rounded-full w-14 h-14"
+          onLoadingComplete={(image) => image.classList.remove("opacity-0")}
         />
       ),
     },
@@ -106,6 +107,7 @@ export default function StudentDataGrid() {
       <div className="p-5 w-full">
         <div className="shadow-md bg-white">
           <StripedDataGrid
+            rowHeight={55}
             rows={users}
             columns={columns}
             onRowSelectionModelChange={handleSelection}
