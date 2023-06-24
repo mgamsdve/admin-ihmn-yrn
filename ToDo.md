@@ -1,5 +1,7 @@
 Note :
 
+- fix responsive bug (coursepage and profPage)
+
 - when change prof courses, delete it to the old professor of that courses .
 - when delete students, also delete his subcollection(periods, and more ..)
 - when delete courses, little alert for saying that this is normal if the last courses is still there @@@
