@@ -20,10 +20,14 @@ export default function SelectWithAdd({ handleClose }) {
   const [profSelected, setProfSelected] = useState("");
 
   const anness = [
-    "1 ere année",
-    "2 eme années",
-    "3 eme années",
-    "4 eme années",
+    "1 ere année jour",
+    "2 eme années jour",
+    "3 eme années jour",
+    "4 eme années jour",
+    "1 ere année soir",
+    "2 eme années soir",
+    "3 eme années soir",
+    "4 eme années soir",
   ];
   const [nomDuCour, setnomDuCour] = useState("");
 

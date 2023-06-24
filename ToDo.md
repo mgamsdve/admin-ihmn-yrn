@@ -1,3 +1,15 @@
+Note :
+
+- when change prof courses, delete it to the old professor of that courses .
+- when delete students, also delete his subcollection(periods, and more ..)
+- when delete courses, little alert for saying that this is normal if the last courses is still there @@@
+- HomePage, really nessesary ?
+
+- Presence Fiche (create a pdf or some with the name of the prof, the courses, the date of the courses, the year+jour or soir, and an entry for all the students in with name, prename)
+- Invitation to exams session (later)
+
+- little iconButton Call at the right of the phone number so you can call it (see api to call from your browser that is connected to your phone, LATER)
+
 Dev Ihmn
 
 - gerer etudiants ✓
@@ -27,7 +39,6 @@ Dev Ihmn
 - les étudiants qui seront dans sont cours ✓ ? maintenant ou de toujours ?
 - télécharger la feuille de présence ✓
 - vue sur les résultats de leurs examens ??
-
 
 garder historique
 

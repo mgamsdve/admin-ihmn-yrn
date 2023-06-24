@@ -5,6 +5,8 @@ import { db } from "@/firebase";
 import { updateProfessor, deleteDocuments } from "@/firebaseFun";
 import { BsTrash } from "react-icons/bs";
 import Image from "next/image";
+import Link from "next/link";
+import { AiFillMail, AiFillPhone } from "react-icons/ai";
 
 function ProfInformation() {
   const router = useRouter();
@@ -144,19 +146,29 @@ function ProfInformation() {
             </div>
           </div>
           <h2>Email</h2>
-          <input
-            className="input-detail"
-            type="text"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
+          <div className="flex flex-row">
+            <input
+              className="input-detail"
+              type="text"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <Link href={`mailto:${email}`}>
+              <AiFillMail className="w-6 h-6 m-1 text-blue-500" />
+            </Link>
+          </div>
           <h2>Telephone</h2>
-          <input
-            className="input-detail"
-            type="text"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-          />
+          <div className="flex flex-row">
+            <input
+              className="input-detail"
+              type="text"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+            />
+            <Link href={`tel:+32${phone}`}>
+              <AiFillPhone className="w-6 h-6 m-1 text-blue-500" />
+            </Link>
+          </div>
 
           <button
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"

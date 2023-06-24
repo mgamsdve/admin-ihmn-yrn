@@ -5,7 +5,8 @@ import { db } from "@/firebase";
 import { updateUser, deleteDocuments } from "@/firebaseFun";
 import { BsTrash } from "react-icons/bs";
 import Image from "next/image";
-
+import { AiFillPhone, AiFillMail } from "react-icons/ai";
+import Link from "next/link";
 function UserInformation() {
   const router = useRouter();
   const [user, setUser] = useState(null);
@@ -148,19 +149,29 @@ function UserInformation() {
             </div>
           </div>
           <h2>Email</h2>
-          <input
-            className="input-detail"
-            type="text"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
+          <div className="flex flex-row">
+            <input
+              className="input-detail"
+              type="text"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <Link href={`mailto:${email}`}>
+              <AiFillMail className="w-6 h-6 m-1 text-blue-500" />
+            </Link>
+          </div>
           <h2>Telephone</h2>
-          <input
-            className="input-detail"
-            type="text"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-          />
+          <div className="flex flex-row">
+            <input
+              className="input-detail"
+              type="text"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+            />
+            <Link href={`tel:+32${phone}`}>
+              <AiFillPhone className="w-6 h-6 m-1 text-blue-500" />
+            </Link>
+          </div>
 
           <h2>Adresse</h2>
 

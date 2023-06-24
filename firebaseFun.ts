@@ -15,7 +15,7 @@ import {
 } from "firebase/firestore";
 import { auth, db } from "./firebase";
 import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
-async function addUser(userData, userMDP) {
+async function addUser(userData, userMDP, handleClose) {
   try {
     const newUser = await createUserWithEmailAndPassword(
       auth,
@@ -24,13 +24,14 @@ async function addUser(userData, userMDP) {
     );
 
     await setDoc(doc(db, "users", newUser.user.uid), userData);
+    handleClose();
     //console.log('Document written with ID: ', newUser.user.uid)
   } catch (e) {
-    console.error("Error adding document: ", e);
+    alert(`Invalid Email`);
   }
 }
 
-async function addProfessor(userData, userMDP) {
+async function addProfessor(userData, userMDP, handleClose) {
   try {
     const newUser = await createUserWithEmailAndPassword(
       auth,
@@ -39,9 +40,10 @@ async function addProfessor(userData, userMDP) {
     );
 
     await setDoc(doc(db, "profs", newUser.user.uid), userData);
+    handleClose();
     //console.log('Document written with ID: ', newUser.user.uid)
   } catch (e) {
-    console.error("Error adding document: ", e);
+    alert(`Invalid Email`);
   }
 }
 
