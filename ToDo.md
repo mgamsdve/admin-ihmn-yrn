@@ -13,7 +13,7 @@ FIRST:
 - Invitation to exams session (later)
 
 - little iconButton Call at the right of the phone number so you can call it (see api to call from your browser that is connected to your phone, LATER)
-
+- LATTERR add settings (bar, localstorage, theme ...)
 Dev Ihmn
 
 - gerer etudiants ✓
