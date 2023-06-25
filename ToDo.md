@@ -1,13 +1,15 @@
 Note :
 
-- fix responsive bug (coursepage and profPage)
+FIRST:
+  - fix responsive bug (coursepage and profPage)
+  - add Verification when add courses (periods set ?, when click add periods, don't show any other things, ...)
+  - see how add shortcut to add courses (soir and jour once, create template, use same as the last years ....)
+  - when change prof courses, delete it to the old professor of that courses .
+  - when delete students, also delete his subcollection(periods, and more ..)
+  - when delete courses, little alert for saying that this is normal if the last courses is still there @@@
+  - HomePage, really nessesary ?
 
-- when change prof courses, delete it to the old professor of that courses .
-- when delete students, also delete his subcollection(periods, and more ..)
-- when delete courses, little alert for saying that this is normal if the last courses is still there @@@
-- HomePage, really nessesary ?
-
-- Presence Fiche (create a pdf or some with the name of the prof, the courses, the date of the courses, the year+jour or soir, and an entry for all the students in with name, prename)
+  - Presence Fiche (create a pdf or some with the name of the prof, the courses, the date of the courses, the year+jour or soir, and an entry for all the students in with name, prename)
 - Invitation to exams session (later)
 
 - little iconButton Call at the right of the phone number so you can call it (see api to call from your browser that is connected to your phone, LATER)
