@@ -320,7 +320,7 @@ export default function MyTreeView() {
       >
         <DialogTitle>Creer une fiche de presence</DialogTitle>
         <DialogContent>
-          <FichePresenceNewContent close={handleClose} />
+          <FichePresenceNewContent close={handleFicheClose} />
         </DialogContent>
       </Dialog>
     </div>
