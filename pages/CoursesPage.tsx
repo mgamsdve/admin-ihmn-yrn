@@ -16,6 +16,8 @@ import { ChevronRight, ExpandMore } from "@mui/icons-material";
 import { useRouter } from "next/router";
 import { Checkbox, Dialog, DialogContent, DialogTitle } from "@mui/material";
 import CoursNewContent from "@/Components/CoursNewContent";
+import CoursesToolBar from "@/Components/CoursesToolBar";
+import FichePresenceNewContent from "@/Components/FichePresenceNewContent";
 
 export default function MyTreeView() {
   const [periodsData, setPeriodsData] = useState([]);
@@ -27,6 +29,7 @@ export default function MyTreeView() {
   const [checked, setChecked] = useState([]);
   const [searchValue, setSearchValue] = useState("");
   const [searchValueperiods, setSearchValuePeriods] = useState("");
+  const [ficheOpen, setFicheOpen] = useState(false);
 
   const handleToggle = (period, annee, courdocId) => () => {
     const currentIndex = checked.findIndex(
@@ -54,6 +57,14 @@ export default function MyTreeView() {
         await deleteCourses(cour.period, cour.annee, cour.courdocId);
       });
     }
+  };
+
+  const handleFicheOpen = () => {
+    setFicheOpen(true);
+  };
+
+  const handleFicheClose = () => {
+    setFicheOpen(false);
   };
 
   useEffect(() => {
@@ -192,36 +203,15 @@ export default function MyTreeView() {
     );
   return (
     <div className="p-7 bg-gray-50 w-full h-screen flex flex-col space-y-5 overflow-scroll">
-      <div className="bg-white w-full h-40 md:h-20 shadow-md rounded-lg p-7 flex flex-col md:flex-row space-y-3 md:space-x-5 md:space-y-0">
-        <input
-          placeholder="Rechercher dans les cours"
-          className=" md:w-fit p-2 bg-gray-50 rounded-md"
-          value={searchValue}
-          onChange={(e) => {
-            setSearchValue(e.target.value);
-          }}
-        />
-        <input
-          placeholder="Periods"
-          className=" md:w-20 bg-gray-50 p-2 rounded-md"
-          value={searchValueperiods}
-          onChange={(e) => {
-            setSearchValuePeriods(e.target.value);
-          }}
-        />
-        <button
-          onClick={handleOpen}
-          className="text-green-600 hover:bg-green-50 rounded-md px-2 duration-300"
-        >
-          Ajouter un cour
-        </button>
-        <button
-          onClick={handleDelete}
-          className="text-red-600 hover:bg-red-50 rounded-md px-2 duration-300"
-        >
-          Supprimer des cours
-        </button>
-      </div>
+      <CoursesToolBar
+        searchValue={searchValue}
+        searchValueperiods={searchValueperiods}
+        setSearchValue={setSearchValue}
+        setSearchValuePeriods={setSearchValuePeriods}
+        handleDelete={handleDelete}
+        handleOpen={handleOpen}
+        handleFicheOpen={handleFicheOpen}
+      />
       <div className="bg-white w-full h-full shadow-lg rounded-lg p-7 overflow-scroll">
         <StyledTreeView
           defaultCollapseIcon={<ExpandMore />}
@@ -315,6 +305,22 @@ export default function MyTreeView() {
         <DialogTitle>Ajouter un Cour</DialogTitle>
         <DialogContent>
           <CoursNewContent handleClose={handleClose} />
+        </DialogContent>
+      </Dialog>
+      <Dialog
+        open={ficheOpen}
+        onClose={handleFicheClose}
+        maxWidth="xl"
+        PaperProps={{
+          style: {
+            width: "900px",
+            height: "700px",
+          },
+        }}
+      >
+        <DialogTitle>Creer une fiche de presence</DialogTitle>
+        <DialogContent>
+          <FichePresenceNewContent />
         </DialogContent>
       </Dialog>
     </div>
