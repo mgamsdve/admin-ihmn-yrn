@@ -3,7 +3,7 @@ import { useState } from "react";
 import SelectCoursesDalogForFichePresence from "./SelectCoursesDialogForFichePresence";
 type Props = {};
 
-function FichePresenceNewContent({}: Props) {
+function FichePresenceNewContent({close}) {
   const [periods, setPeriods] = useState("");
   const [annee, setAnnee] = useState("");
 
@@ -96,7 +96,7 @@ function FichePresenceNewContent({}: Props) {
             Creer la fiche de presence (PDF)
           </button>
           <button
-            onClick={handleClose}
+            onClick={close}
             className="bg-red-100 text-red-500 hover:bg-red-50 duration-300 p-3 rounded-md"
           >
             Annuler
