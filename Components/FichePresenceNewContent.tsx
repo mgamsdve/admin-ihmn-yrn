@@ -1,9 +1,12 @@
 import { Dialog, DialogContent, DialogTitle } from "@mui/material";
 import { useState } from "react";
 import SelectCoursesDalogForFichePresence from "./SelectCoursesDialogForFichePresence";
+import createXLSX from "@/FicheExcel";
+import { collection, doc, getDoc, getDocs, query } from "firebase/firestore";
+import { db } from "@/firebase";
 type Props = {};
 
-function FichePresenceNewContent({close}) {
+function FichePresenceNewContent({ close }) {
   const [periods, setPeriods] = useState("");
   const [annee, setAnnee] = useState("");
 
@@ -25,7 +28,32 @@ function FichePresenceNewContent({close}) {
     setPeriods(PeriodsDuCours);
   };
 
-  const handleCreateFiche = () => {};
+  const handleCreateFiche = () => {
+    getDoc(doc(db, "periods", periods, "annees", annee, "cours", cour)).then(
+      (docs) => {
+        const studrefs = docs.data().eleves;
+        const students = [];
+
+        // Utilisation de Promise.all pour attendre que toutes les promesses soient résolues
+        Promise.all(
+          studrefs.map((studref) => {
+            return getDoc(studref).then((studdoc) => {
+              const data: any = studdoc.data();
+              const name = data.name;
+              const prename = data.prename;
+
+              const np = `${prename} ${name}`;
+              students.push(np);
+            });
+          })
+        ).then(() => {
+          // Toutes les opérations getDoc sont maintenant terminées
+          console.log(students);
+          createXLSX(students, prof, cour, date);
+        });
+      }
+    );
+  };
   return (
     <>
       <div className="p-5">
@@ -83,7 +111,7 @@ function FichePresenceNewContent({close}) {
                 onClick={handleOpenNew}
                 className="bg-blue-500 text-white mt-6 p-2 rounded-sm"
               >
-                Selectionner un cours (OPT)
+                Selectionner un cours
               </button>
             </div>
           </div>
@@ -93,7 +121,7 @@ function FichePresenceNewContent({close}) {
             onClick={handleCreateFiche}
             className="bg-green-100 text-green-500 hover:bg-green-50 duration-300 p-3 rounded-md"
           >
-            Creer la fiche de presence (PDF)
+            Creer la fiche de presence (XLSX)
           </button>
           <button
             onClick={close}
