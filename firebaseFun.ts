@@ -87,15 +87,28 @@ async function deleteUser(uid) {
 const deleteDocuments = async (collectionName: string, docIds: string[]) => {
   const batch = writeBatch(db);
 
-  docIds.forEach((docId) => {
+  for (const docId of docIds) {
     const docRef = doc(db, collectionName, docId);
     batch.delete(docRef);
     deleteUser(docId);
-  });
+
+    // Delete periods subcollection
+    const periodsCollectionRef = collection(docRef, "periods");
+    const periodsSnapshot = await getDocs(periodsCollectionRef);
+    for (const periodDoc of periodsSnapshot.docs) {
+      batch.delete(periodDoc.ref);
+
+      // Delete cours subcollection
+      const coursCollectionRef = collection(periodDoc.ref, "cours");
+      const coursSnapshot = await getDocs(coursCollectionRef);
+      coursSnapshot.forEach((doc) => {
+        batch.delete(doc.ref);
+      });
+    }
+  }
 
   await batch.commit();
 };
-
 const addCoursToTheUser = async (
   userUId: string,
   anneeId: string,

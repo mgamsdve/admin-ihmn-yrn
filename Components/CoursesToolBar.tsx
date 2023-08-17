@@ -12,7 +12,7 @@ function CoursesToolBar({
   handleFicheOpen,
 }) {
   return (
-    <div className="bg-white w-full h-40 md:h-20 shadow-md rounded-lg p-7 flex flex-col md:flex-row space-y-3 md:space-x-5 md:space-y-0">
+    <div className="bg-white w-full h-50 md:h-20 shadow-md rounded-lg flex flex-col md:flex-row space-y-3 md:space-x-5 md:space-y-0 p-5">
       <input
         placeholder="Rechercher dans les cours"
         className=" md:w-fit p-2 bg-gray-50 rounded-md"
@@ -31,7 +31,7 @@ function CoursesToolBar({
       />
       <button
         onClick={handleOpen}
-        className="text-green-600 hover:bg-green-50 rounded-md px-2 duration-300"
+        className="text-green-600 hover:bg-green-50 px-2 rounded-md duration-300"
       >
         Ajouter un cour
       </button>

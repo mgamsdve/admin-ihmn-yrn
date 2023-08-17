@@ -103,7 +103,7 @@ export default function StudentDataGrid() {
   ];
 
   return (
-    <div className="w-full h-screen bg-gray-50">
+    <div className="w-full h-screen bg-gray-50 overflow-y-scroll">
       <div className="p-5 w-full">
         <div className="shadow-md bg-white">
           <StripedDataGrid

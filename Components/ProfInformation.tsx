@@ -72,9 +72,9 @@ function ProfInformation() {
 
   async function handleDeleteUsers(e) {
     if (confirm("Voulez-vous vraiment supprimer ces utilisateurs ?")) {
-      await deleteDocuments("users", userid);
+      await deleteDocuments("profs", userid);
       alert("Les utilisateurs ont été supprimés");
-      router.push("/StudentPages");
+      router.push("/ProfPage");
     } else {
       alert("Rien n'a été supprimé");
     }
