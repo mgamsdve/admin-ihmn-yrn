@@ -63,13 +63,13 @@ export default function SelectWithAdd({ handleClose }) {
           await addCourses(
             periodsSelected,
             "1 ere année jour",
-            nomDuCour,
+            nomDuCour + " jour",
             profSelected
           );
           await addCourses(
             periodsSelected,
             "1 ere année soir",
-            nomDuCour,
+            nomDuCour + " soir",
             profSelected
           );
         }
@@ -77,13 +77,13 @@ export default function SelectWithAdd({ handleClose }) {
           await addCourses(
             periodsSelected,
             "2 eme années jour",
-            nomDuCour,
+            nomDuCour + " jour",
             profSelected
           );
           await addCourses(
             periodsSelected,
             "2 eme années soir",
-            nomDuCour,
+            nomDuCour + " soir",
             profSelected
           );
         }
@@ -91,13 +91,13 @@ export default function SelectWithAdd({ handleClose }) {
           await addCourses(
             periodsSelected,
             "3 eme années jour",
-            nomDuCour,
+            nomDuCour + " jour",
             profSelected
           );
           await addCourses(
             periodsSelected,
-            "3 eme années soir",
-            nomDuCour,
+            nomDuCour + " soir",
+            nomDuCour + " soir",
             profSelected
           );
         }
@@ -105,13 +105,13 @@ export default function SelectWithAdd({ handleClose }) {
           await addCourses(
             periodsSelected,
             "4 eme années jour",
-            nomDuCour,
+            nomDuCour + " jour",
             profSelected
           );
           await addCourses(
             periodsSelected,
             "4 eme années soir",
-            nomDuCour,
+            nomDuCour + " soir",
             profSelected
           );
         }

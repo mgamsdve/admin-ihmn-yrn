@@ -240,7 +240,6 @@ const deleteCourses = async (periodId, anneeId, courId) => {
   const elevesInCourses = [];
 
   const docSnap = await getDoc(courRefInPeriod);
-
   if (docSnap.exists()) {
     const data = docSnap.data();
     const elevesRefs = data.eleves;
@@ -257,18 +256,23 @@ const deleteCourses = async (periodId, anneeId, courId) => {
     }
 
     const profDuCour = data.profDuCour;
-    if (profDuCour === "") {
+    if (profDuCour) {
+      if (profDuCour === "") {
+        console.log("pas de prof");
+      } else {
+        const courDocInProfPeriods = doc(
+          profDuCour,
+          "periods",
+          periodId,
+          "annees",
+          anneeId,
+          "cours",
+          courId
+        );
+        await deleteDoc(courDocInProfPeriods);
+      }
     } else {
-      const courDocInProfPeriods = doc(
-        profDuCour,
-        "periods",
-        periodId,
-        "annees",
-        anneeId,
-        "cours",
-        courId
-      );
-      await deleteDoc(courDocInProfPeriods);
+      console.log("Pas de prof");
     }
   } else {
     console.log("No such document!");
