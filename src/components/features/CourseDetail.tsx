@@ -22,7 +22,15 @@ export function CourseDetail() {
     if (!id || !period || !year) return;
     const load = async () => {
       setLoading(true);
-      const courseRef = doc(db, "periods", String(period), "annees", String(year), "cours", String(id));
+      const courseRef = doc(
+        db,
+        "periods",
+        String(period),
+        "annees",
+        String(year),
+        "cours",
+        String(id),
+      );
       const snapshot = await getDoc(courseRef);
       if (!snapshot.exists()) {
         setCourse(null);
@@ -36,18 +44,21 @@ export function CourseDetail() {
       if (data.profDuCour) {
         const profSnap = await getDoc(data.profDuCour);
         if (profSnap.exists()) {
-          setProfessor({ id: profSnap.id, ...profSnap.data() });
+          setProfessor({
+            id: profSnap.id,
+            ...((profSnap.data() as Record<string, any>) || {}),
+          });
         }
       }
 
       if (data.eleves && Array.isArray(data.eleves)) {
         const studentDocs = await Promise.all(
-          data.eleves.map((ref: any) => getDoc(ref))
+          data.eleves.map((ref: any) => getDoc(ref)),
         );
         setStudents(
           studentDocs
             .filter((docSnap) => docSnap.exists())
-            .map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }))
+            .map((docSnap) => ({ id: docSnap.id, ...docSnap.data() })),
         );
       } else {
         setStudents([]);
@@ -61,7 +72,13 @@ export function CourseDetail() {
 
   if (loading) {
     return (
-      <div style={{ display: "flex", justifyContent: "center", padding: designSystem.spacing.xl }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          padding: designSystem.spacing.xl,
+        }}
+      >
         <Spinner />
       </div>
     );
@@ -70,7 +87,12 @@ export function CourseDetail() {
   if (!course) {
     return (
       <Card>
-        <div style={{ ...designSystem.typography.body, color: designSystem.colors.text.secondary }}>
+        <div
+          style={{
+            ...designSystem.typography.body,
+            color: designSystem.colors.text.secondary,
+          }}
+        >
           Cours introuvable.
         </div>
       </Card>
@@ -78,11 +100,30 @@ export function CourseDetail() {
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: designSystem.spacing.lg }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: designSystem.spacing.lg,
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
         <div>
-          <div style={{ ...designSystem.typography.h2 }}>{course.nomDuCour || course.id}</div>
-          <div style={{ ...designSystem.typography.bodySmall, color: designSystem.colors.text.secondary }}>
+          <div style={{ ...designSystem.typography.h2 }}>
+            {course.nomDuCour || course.id}
+          </div>
+          <div
+            style={{
+              ...designSystem.typography.bodySmall,
+              color: designSystem.colors.text.secondary,
+            }}
+          >
             {String(period)} • {String(year)}
           </div>
         </div>
@@ -99,11 +140,18 @@ export function CourseDetail() {
         }}
       >
         <Card>
-          <div style={{ ...designSystem.typography.bodySmall, color: designSystem.colors.text.secondary }}>
+          <div
+            style={{
+              ...designSystem.typography.bodySmall,
+              color: designSystem.colors.text.secondary,
+            }}
+          >
             Professeur
           </div>
           <div style={{ ...designSystem.typography.h4 }}>
-            {professor ? `${professor.name || ""} ${professor.prename || ""}`.trim() : "Non assigné"}
+            {professor
+              ? `${professor.name || ""} ${professor.prename || ""}`.trim()
+              : "Non assigné"}
           </div>
           {professor && (
             <Badge variant="success" size="sm">
@@ -112,7 +160,12 @@ export function CourseDetail() {
           )}
         </Card>
         <Card>
-          <div style={{ ...designSystem.typography.bodySmall, color: designSystem.colors.text.secondary }}>
+          <div
+            style={{
+              ...designSystem.typography.bodySmall,
+              color: designSystem.colors.text.secondary,
+            }}
+          >
             Étudiants
           </div>
           <div style={{ ...designSystem.typography.h4 }}>{students.length}</div>
@@ -120,15 +173,31 @@ export function CourseDetail() {
       </div>
 
       <Card>
-        <div style={{ ...designSystem.typography.h3, marginBottom: designSystem.spacing.md }}>
+        <div
+          style={{
+            ...designSystem.typography.h3,
+            marginBottom: designSystem.spacing.md,
+          }}
+        >
           Étudiants inscrits
         </div>
         {students.length === 0 ? (
-          <div style={{ ...designSystem.typography.bodySmall, color: designSystem.colors.text.secondary }}>
+          <div
+            style={{
+              ...designSystem.typography.bodySmall,
+              color: designSystem.colors.text.secondary,
+            }}
+          >
             Aucun étudiant inscrit.
           </div>
         ) : (
-          <div style={{ display: "flex", flexDirection: "column", gap: designSystem.spacing.sm }}>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: designSystem.spacing.sm,
+            }}
+          >
             {students.map((student) => (
               <div
                 key={student.id}
