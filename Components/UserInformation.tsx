@@ -76,7 +76,7 @@ function UserInformation() {
     if (confirm("Voulez-vous vraiment supprimer ces utilisateurs ?")) {
       await deleteDocuments("users", userid);
       alert("Les utilisateurs ont été supprimés");
-      router.push("/StudentPages");
+      router.push("/students");
     } else {
       alert("Rien n'a été supprimé");
     }

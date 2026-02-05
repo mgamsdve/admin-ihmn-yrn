@@ -1,26 +1,30 @@
-import { Dialog, DialogContent, DialogTitle } from "@mui/material";
 import { useState } from "react";
-import SelectCoursesDalogForFichePresence from "./SelectCoursesDialogForFichePresence";
-import createXLSX from "@/FicheExcel";
-import { collection, doc, getDoc, getDocs, query } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/firebase";
-type Props = {};
+import createXLSX from "@/FicheExcel";
+import SelectCoursesDalogForFichePresence from "./SelectCoursesDialogForFichePresence";
+import { designSystem } from "@/src/lib/design-system";
+import { Input } from "@/src/components/ui/Input";
+import { DatePicker } from "@/src/components/ui/DatePicker";
+import { Button } from "@/src/components/ui/Button";
+import { Modal } from "@/src/components/ui/Modal";
 
-function FichePresenceNewContent({ close }) {
+interface FichePresenceProps {
+  close: () => void;
+}
+
+function FichePresenceNewContent({ close }: FichePresenceProps) {
   const [periods, setPeriods] = useState("");
   const [annee, setAnnee] = useState("");
-
   const [cour, setCour] = useState("");
   const [prof, setProf] = useState("");
   const [date, setDate] = useState("");
-
   const [open, setOpen] = useState(false);
-  const handleOpenNew = () => {
-    setOpen(true);
-  };
-  const handleClose = () => {
-    setOpen(false);
-  };
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const handleOpenNew = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
   const addInfo = ({ NomDuCour, NomDuProf, AnneeDuCour, PeriodsDuCours }) => {
     setCour(NomDuCour);
     setProf(NomDuProf);
@@ -28,133 +32,136 @@ function FichePresenceNewContent({ close }) {
     setPeriods(PeriodsDuCours);
   };
 
+  const validate = () => {
+    const nextErrors: Record<string, string> = {};
+    if (!cour) nextErrors.cour = "Cours requis";
+    if (!periods) nextErrors.periods = "Période requise";
+    if (!annee) nextErrors.annee = "Année requise";
+    if (!date) nextErrors.date = "Date requise";
+    setErrors(nextErrors);
+    return Object.keys(nextErrors).length === 0;
+  };
+
   const handleCreateFiche = () => {
+    if (!validate()) return;
+
     getDoc(doc(db, "periods", periods, "annees", annee, "cours", cour)).then(
       (docs) => {
-        const studrefs = docs.data().eleves;
-        const students = [];
+        const studrefs = docs.data().eleves || [];
+        const students: string[] = [];
 
-        // Utilisation de Promise.all pour attendre que toutes les promesses soient résolues
         Promise.all(
           studrefs.map((studref) => {
             return getDoc(studref).then((studdoc) => {
               const data: any = studdoc.data();
-              const name = data.name;
-              const prename = data.prename;
-
-              const np = `${prename} ${name}`;
-              students.push(np);
+              const name = data.name || "";
+              const prename = data.prename || "";
+              const np = `${prename} ${name}`.trim();
+              if (np) students.push(np);
             });
           })
         ).then(() => {
-          // Toutes les opérations getDoc sont maintenant terminées
-          console.log(students);
           createXLSX(students, prof, cour, date);
         });
       }
     );
   };
+
   return (
-    <>
-      <div className="p-5">
-        <div className="flex flex-row space-x-10">
-          <div className="flex flex-col space-y-5">
-            <div className="flex flex-col">
-              <h2>Periode du cour :</h2>
-              <input
-                value={periods}
-                onChange={(e) => setPeriods(e.target.value)}
-                className="input-detail"
-                type="text"
-              />
-            </div>
-            <div className="flex flex-col">
-              <h2>Annee du cour :</h2>
-              <input
-                value={annee}
-                onChange={(e) => setAnnee(e.target.value)}
-                className="input-detail"
-                type="text"
-              />
-            </div>
-            <div className="flex flex-col">
-              <h2>Nom du cour :</h2>
-              <input
-                value={cour}
-                onChange={(e) => setCour(e.target.value)}
-                className="input-detail"
-                type="text"
-              />
-            </div>
-          </div>
-          <div className="flex flex-col space-y-5">
-            <div className="flex flex-col">
-              <h2>Prof du cour :</h2>
-              <input
-                value={prof}
-                onChange={(e) => setProf(e.target.value)}
-                className="input-detail"
-                type="text"
-              />
-            </div>
-            <div className="flex flex-col">
-              <h2>Date du cour :</h2>
-              <input
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                className="input-detail"
-                type="text"
-              />
-            </div>
-            <div className="flex flex-col">
-              <button
-                onClick={handleOpenNew}
-                className="bg-blue-500 text-white mt-6 p-2 rounded-sm"
-              >
-                Selectionner un cours
-              </button>
-            </div>
-          </div>
-        </div>
-        <div className="flex flex-row space-x-3 mt-10">
-          <button
-            onClick={handleCreateFiche}
-            className="bg-green-100 text-green-500 hover:bg-green-50 duration-300 p-3 rounded-md"
-          >
-            Creer la fiche de presence (XLSX)
-          </button>
-          <button
-            onClick={close}
-            className="bg-red-100 text-red-500 hover:bg-red-50 duration-300 p-3 rounded-md"
-          >
-            Annuler
-          </button>
-        </div>
-      </div>
+    <div style={{ display: "flex", flexDirection: "column", gap: designSystem.spacing.lg }}>
       <div>
-        <Dialog
-          open={open}
-          onClose={handleClose}
-          maxWidth="xl"
-          PaperProps={{
-            style: {
-              width: "1000px",
-              height: "900px",
-            },
+        <div
+          style={{
+            ...designSystem.typography.h4,
+            color: designSystem.colors.text.primary,
+            marginBottom: designSystem.spacing.xs,
           }}
         >
-          <DialogTitle>
-            Selectionner un cours pour la fiche de presence
-          </DialogTitle>
-          <DialogContent>
-            <SelectCoursesDalogForFichePresence
-              handleClose={handleClose}
-              addInfo={addInfo}
-            />
-          </DialogContent>
-        </Dialog>
+          Créer une fiche de présence
+        </div>
+        <div style={{ ...designSystem.typography.bodySmall, color: designSystem.colors.text.secondary }}>
+          Sélectionnez un cours et une date pour générer un fichier Excel.
+        </div>
       </div>
-    </>
+
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: designSystem.spacing.md,
+        }}
+      >
+        <Input
+          label="Période"
+          value={periods}
+          onChange={(e) => {
+            setPeriods(e.target.value);
+            if (errors.periods) setErrors({ ...errors, periods: "" });
+          }}
+          error={errors.periods}
+          placeholder="ex: 2024-2025"
+        />
+        <Input
+          label="Année"
+          value={annee}
+          onChange={(e) => {
+            setAnnee(e.target.value);
+            if (errors.annee) setErrors({ ...errors, annee: "" });
+          }}
+          error={errors.annee}
+          placeholder="ex: 1 ere année jour"
+        />
+        <Input
+          label="Cours"
+          value={cour}
+          onChange={(e) => {
+            setCour(e.target.value);
+            if (errors.cour) setErrors({ ...errors, cour: "" });
+          }}
+          error={errors.cour}
+          placeholder="Nom du cours"
+        />
+        <Input
+          label="Professeur"
+          value={prof}
+          onChange={(e) => setProf(e.target.value)}
+          placeholder="Nom du professeur"
+        />
+        <DatePicker
+          label="Date du cours"
+          value={date}
+          onChange={(value) => {
+            setDate(value);
+            if (errors.date) setErrors({ ...errors, date: "" });
+          }}
+          error={errors.date}
+        />
+      </div>
+
+      <div style={{ display: "flex", gap: designSystem.spacing.sm }}>
+        <Button variant="secondary" onClick={handleOpenNew}>
+          Sélectionner un cours
+        </Button>
+        <Button variant="primary" onClick={handleCreateFiche}>
+          Créer la fiche (XLSX)
+        </Button>
+        <Button variant="ghost" onClick={close}>
+          Annuler
+        </Button>
+      </div>
+
+      <Modal
+        isOpen={open}
+        onClose={handleClose}
+        title="Sélectionner un cours"
+        size="lg"
+      >
+        <SelectCoursesDalogForFichePresence
+          handleClose={handleClose}
+          addInfo={addInfo}
+        />
+      </Modal>
+    </div>
   );
 }
 

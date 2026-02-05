@@ -22,19 +22,19 @@ function Navigationbar() {
     },
     {
       title: "Students",
-      to: "/StudentPages",
+      to: "/students",
       icon: <FiUsers className=" origin-left font-medium text-lg ml-2" />,
     },
     {
       title: "Courses",
-      to: "/CoursesPage",
+      to: "/courses",
       icon: (
         <AiOutlineReconciliation className=" origin-left font-medium text-lg ml-2" />
       ),
     },
     {
       title: "Professors",
-      to: "/ProfPage",
+      to: "/professors",
       icon: (
         <HiOutlineUserGroup className=" origin-left font-medium text-lg ml-2" />
       ),

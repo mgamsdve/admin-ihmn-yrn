@@ -1,11 +1,15 @@
-import UserCourses from '@/Components/UserCourses'
-import UserInformation from '@/Components/UserInformation'
+import { useEffect } from "react";
+import { useRouter } from "next/router";
 
 export default function UserDetail() {
-    return (
-        <div className="p-7 w-full h-screen overflow-y-scroll flex flex-col sm:flex-row md:space-x-8 space-y-3 md:space-y-0 bg-gray-50">
-            <UserInformation />
-            <UserCourses />
-        </div>
-    )
+  const router = useRouter();
+  const { id } = router.query;
+
+  useEffect(() => {
+    if (typeof id === "string") {
+      router.replace(`/students/${id}`);
+    }
+  }, [id, router]);
+
+  return null;
 }

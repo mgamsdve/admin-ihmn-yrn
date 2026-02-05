@@ -1,11 +1,15 @@
-import ProfCourses from "@/Components/ProfCourses";
-import ProfInformation from "@/Components/ProfInformation";
+import { useEffect } from "react";
+import { useRouter } from "next/router";
 
 export default function ProfDetail() {
-  return (
-    <div className="p-7 w-full h-screen overflow-y-scroll flex flex-col sm:flex-row md:space-x-8 space-y-3 md:space-y-0 bg-gray-50">
-      <ProfInformation />
-      <ProfCourses />
-    </div>
-  );
+  const router = useRouter();
+  const { id } = router.query;
+
+  useEffect(() => {
+    if (typeof id === "string") {
+      router.replace(`/professors/${id}`);
+    }
+  }, [id, router]);
+
+  return null;
 }
