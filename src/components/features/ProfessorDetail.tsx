@@ -216,12 +216,14 @@ export function ProfessorDetail({ professorId }: ProfessorDetailProps) {
       professor.name,
       professor.email,
       professor.phone,
-      professor.specialization || professor.specialite,
+      professor.specialization,
       professor.status,
       professor.bio,
-      professor.adresse,
     ];
-    const filled = fields.filter((value) => value !== undefined && value !== null && String(value).trim() !== "").length;
+    const filled = fields.filter(
+      (value) =>
+        value !== undefined && value !== null && String(value).trim() !== "",
+    ).length;
     return Math.round((filled / fields.length) * 100);
   }, [professor]);
 
@@ -544,7 +546,15 @@ export function ProfessorDetail({ professorId }: ProfessorDetailProps) {
               {professor.specialization || "Sans spécialité"}
             </p>
           </div>
-          <Badge variant={completeness >= 80 ? "success" : completeness >= 50 ? "warning" : "danger"}>
+          <Badge
+            variant={
+              completeness >= 80
+                ? "success"
+                : completeness >= 50
+                  ? "warning"
+                  : "danger"
+            }
+          >
             Complétude {completeness}%
           </Badge>
         </div>
