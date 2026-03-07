@@ -1,47 +1,122 @@
+# IHMN Admin — Back-office web application
+
+A **Next.js** administration panel built for IHMN (Institut d'Hygiène Mentale et de Neurologie), backed by **Firebase / Firestore**. It lets school administrators manage students, professors, and courses from a single interface.
+
+---
+
+## Tech stack
+
+| Layer | Technology |
+|---|---|
+| Framework | [Next.js 13](https://nextjs.org/) (React 18, TypeScript) |
+| UI | [MUI v5](https://mui.com/) + [Tailwind CSS v3](https://tailwindcss.com/) |
+| Database / Auth | [Firebase v9](https://firebase.google.com/) (Firestore + Authentication) |
+| Data grid | [@mui/x-data-grid](https://mui.com/x/react-data-grid/) |
+| Excel export | [ExcelJS](https://github.com/exceljs/exceljs) + [FileSaver.js](https://github.com/eligrey/FileSaver.js) |
+| Icons | [MUI Icons](https://mui.com/material-ui/material-icons/) + [React Icons](https://react-icons.github.io/react-icons/) |
+
+---
+
+## Features implemented
+
+### Authentication
+- Firebase Auth with protected routes (redirect to login when unauthenticated)
+
+### Students
+- List all students in a searchable, sortable data-grid
+- Add / delete a student
+- Double-click to open the detailed student view
+- **Detailed view**: edit personal info (name, surname, birthday, school year, email, phone, address), manage course enrolments, delete the student
+
+### Courses
+- Tree-view organised by **period → year → course name → professor → enrolled students**
+- Add a course (period, year, course name, optional professor)
+- Remove a course
+- Search across courses
+- Double-click on an enrolled student to open their detailed view
+
+### Professors
+- List all professors in a searchable data-grid
+- Add / remove a professor
+- Double-click to open the detailed professor view
+- **Detailed view**: edit personal information, add / remove courses taught, tree-view of their courses, search across courses
+
+---
+
+## Not yet implemented
+
+- Exam results & exam sessions
+- Attendance sheets (*feuille de présence*)
+- Exam session enrolment
+- WhatsApp / Signal group links
+- Supplementary trainings / internships (32 h cycles)
+- Push notifications
+- Student / professor profile photos
+- Responsive layout fixes on courses and professor pages
+
+---
+
+## Getting started
+
+### Prerequisites
+
+- **Node.js** ≥ 18
+- **Yarn** (or npm)
+- A Firebase project with Firestore and Authentication enabled
+
+### Installation
+
+```bash
+git clone https://github.com/mgamsdve/admin-ihmn-yrn.git
+cd admin-ihmn-yrn
+yarn install
 ```
 
+### Environment variables
 
-Did :
-    Auth state and protected Route
+Copy the example file and fill in your Firebase credentials:
 
-    Simple Views on the students :
-        - Can add a student
-        - Can delete a student
-        - Can search on the table of the student
-        - On double Click, redirect to the big views on that student
-        - Can modify the table as we want
+```bash
+cp .env.example .env.local
+```
 
-    Big views on a single student :
-        - Can add, remove courses that are created
-        - All courses are in their periods and in their year
-        - Can search on his courses
-        - Can Change his personal info (name, surname, birthday, Year, email, phone, adresses)
-        - Delete the Sutudent
+| Variable | Description |
+|---|---|
+| `NEXT_PUBLIC_API_KEY` | Firebase API key |
+| `NEXT_PUBLIC_AUTH_DOMAIN` | Firebase auth domain |
+| `NEXT_PUBLIC_PROJECT_ID` | Firestore project ID |
+| `NEXT_PUBLIC_STORAGE_BUCKET` | Firebase storage bucket |
+| `NEXT_PUBLIC_MESSENGING_SENDER_ID` | Firebase messaging sender ID (note: env var name kept as-is to match `.env.example`) |
+| `NEXT_PUBLIC_APP_ID` | Firebase app ID |
 
-    Views with courses, an treeview with the periods, then the years then the courses folowed by the name of his profs, then the students that are in :
-        - Can add courses (periods, year, nameOfTheCourses, professor(optional))
-        - Can remove Courses
-        - Can search
-        - Can double Click on student to acces their big views
+### Running locally
 
-    Simple Views on professor :
-        - Can add profs
-        - Can remove profs
-        - doubleclick redirect to the big views of that prof
+```bash
+yarn dev
+```
 
-    Big views on proffessor :
-        - Can modify their information
-        - Can add an courses that they do
-        - Can remove an courses that they had
-        - Can search in their courses
-        - Can see in a treeview the courses that they do
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-Didn't :
-    Exams Notes
-    Exams Sessions
-    Feuille de presence
-    Exams inscription to the session
-    whatsapp/signal links
-    Stages/formations of 32 hours
+### Build for production
 
+```bash
+yarn build
+yarn start
+```
+
+---
+
+## Project structure
+
+```
+├── Components/          # Reusable React components (dialogs, grids, tree views…)
+├── context/             # React context providers
+├── pages/               # Next.js pages (students, courses, professors, login…)
+├── public/              # Static assets
+├── styles/              # Global CSS
+├── firebase.ts          # Firebase client initialisation
+├── firebase-admin.ts    # Firebase Admin SDK initialisation (server-side)
+├── firebaseFun.ts       # Firestore helper functions
+├── FicheExcel.ts        # Excel export logic
+└── .env.example         # Environment variable template
 ```
